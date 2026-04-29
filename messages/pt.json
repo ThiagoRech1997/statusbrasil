@@ -21,6 +21,9 @@
       "en": "Inglês"
     }
   },
+  "A11y": {
+    "skipToContent": "Pular para o conteúdo"
+  },
   "Footer": {
     "links": {
       "metodologia": "Metodologia",
