@@ -1,0 +1,35 @@
+{
+  "Header": {
+    "siteTitle": "StatusBrasil",
+    "tagline": "Brazilian government services availability tracker",
+    "nav": {
+      "home": "Home",
+      "ranking": "Ranking",
+      "comparativo": "Compare",
+      "incidentes": "Incidents",
+      "metodologia": "Methodology"
+    },
+    "themeToggle": {
+      "label": "Toggle theme",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "localeSwitcher": {
+      "label": "Language",
+      "pt": "Portuguese",
+      "en": "English"
+    }
+  },
+  "Footer": {
+    "links": {
+      "metodologia": "Methodology",
+      "privacidade": "Privacy",
+      "api": "Public API",
+      "github": "GitHub",
+      "feed": "RSS"
+    },
+    "license": "Open source under AGPL-3.0",
+    "tagline": "Public portal — official data, raw numbers, no automated value judgments"
+  }
+}

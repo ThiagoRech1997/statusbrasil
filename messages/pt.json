@@ -1,0 +1,35 @@
+{
+  "Header": {
+    "siteTitle": "StatusBrasil",
+    "tagline": "Disponibilidade dos serviços do governo brasileiro",
+    "nav": {
+      "home": "Início",
+      "ranking": "Ranking",
+      "comparativo": "Comparativo",
+      "incidentes": "Incidentes",
+      "metodologia": "Metodologia"
+    },
+    "themeToggle": {
+      "label": "Alternar tema",
+      "light": "Tema claro",
+      "dark": "Tema escuro",
+      "system": "Tema do sistema"
+    },
+    "localeSwitcher": {
+      "label": "Idioma",
+      "pt": "Português",
+      "en": "Inglês"
+    }
+  },
+  "Footer": {
+    "links": {
+      "metodologia": "Metodologia",
+      "privacidade": "Privacidade",
+      "api": "API pública",
+      "github": "GitHub",
+      "feed": "RSS"
+    },
+    "license": "Código aberto sob licença AGPL-3.0",
+    "tagline": "Portal público — dados oficiais, números crus, sem juízo de valor automatizado"
+  }
+}
