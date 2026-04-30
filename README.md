@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# StatusBrasil
 
-## Getting Started
+[![CI](https://github.com/ThiagoRech1997/statusbrasil/actions/workflows/ci.yml/badge.svg)](https://github.com/ThiagoRech1997/statusbrasil/actions/workflows/ci.yml)
+[![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
+[![Node](https://img.shields.io/badge/node-%E2%89%A522-339933?logo=node.js&logoColor=white)](.nvmrc)
 
-First, run the development server:
+Public availability dashboard for Brazilian government services. Tracks uptime, incidents, and degradation across federal portals — official data, raw numbers, no automated value judgments.
+
+Built with Next.js 16 (App Router) and React 19, fully internationalized (PT/EN), released under AGPL-3.0.
+
+## Quickstart
+
+Prerequisites: Node ≥22, [pnpm](https://pnpm.io) 10.33.0 (managed via Corepack — `corepack enable` once).
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The dev server runs on [http://localhost:3000](http://localhost:3000) with the default locale (`pt`) at `/pt`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Common tasks
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Task | Command |
+| --- | --- |
+| Dev server (Turbopack) | `pnpm dev` |
+| Production build | `pnpm build` |
+| Start built app | `pnpm start` |
+| Lint + format check | `pnpm lint` |
+| Lint + format autofix | `pnpm format` |
+| Typecheck | `pnpm typecheck` |
+| Unit tests | `pnpm test` |
+| Test watch mode | `pnpm test:watch` |
+| Coverage report | `pnpm test:coverage` |
+| i18n drift check | `node scripts/i18n-drift.mjs` |
 
-## Learn More
+## Environment variables
 
-To learn more about Next.js, take a look at the following resources:
+All variables are optional in development. Sensitive keys are auto-redacted by the pino logger (see `src/lib/logger.ts`).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Variable | Scope | Purpose | Default |
+| --- | --- | --- | --- |
+| `NEXT_PUBLIC_SENTRY_DSN` | client | Sentry DSN for browser error reporting; init is skipped if unset | unset |
+| `SENTRY_DSN` | server | Sentry DSN for Node runtime error reporting; init is skipped if unset | unset |
+| `LOG_LEVEL` | server | pino log level (`trace`/`debug`/`info`/`warn`/`error`/`fatal`) | `debug` (dev), `info` (prod) |
+| `GATUS_DRIVER` | server | Gatus client driver (`stub` or `http`) | `stub` |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project structure
 
-## Deploy on Vercel
+```
+src/
+  app/
+    [locale]/        # locale-segmented pages (pt, en)
+    api/             # route handlers (e.g. /api/health)
+  i18n/              # next-intl routing + navigation helpers
+  lib/               # server-only utilities (logger, gatus client, version)
+  proxy.ts           # locale + security headers middleware (Next 16 filename)
+messages/
+  pt.json            # canonical locale messages
+  en.json            # mirror — must match pt.json key structure
+docs/
+  adr/               # architecture decision records
+scripts/
+  i18n-drift.mjs     # CI guard against pt/en key divergence
+.github/
+  workflows/ci.yml   # lint + typecheck + tests + i18n drift
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Methodology and architecture
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Methodology** — how availability is computed and what counts as an incident: see the in-app [Methodology page](src/app/[locale]/) once published; tracked in the project roadmap.
+- **Architecture decisions** — see [`docs/adr/`](docs/adr/).
+- **Agent guide** — see [`AGENTS.md`](AGENTS.md) for repo conventions, Next 16 traps, and command reference.
+
+## Contributing
+
+Bug reports, feature requests, and patches are welcome. Read [`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a PR — it covers commit conventions, the DCO sign-off, and the local dev workflow. All participation is governed by the [Code of Conduct](CODE_OF_CONDUCT.md).
+
+## License
+
+Released under the [GNU Affero General Public License v3.0](LICENSE). If you run a modified version of StatusBrasil on a network-accessible service, the AGPL requires you to make the corresponding source available to its users.
