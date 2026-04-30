@@ -61,7 +61,18 @@ The full DCO text is at <https://developercertificate.org>. CI rejects unsigned 
 2. Make focused commits following the conventions above.
 3. Push and open a PR against `main`. The PR template will prompt for the verifications you ran.
 4. Address review feedback by adding new commits — do not force-push over review history unless asked.
-5. Once approved and CI is green, a maintainer merges (squash or rebase, depending on commit hygiene).
+5. Once CI is green, a maintainer merges via squash or rebase (linear history is required on `main`).
+
+## Branch protection on `main`
+
+The `main` branch is protected. Every change must land through a pull request that satisfies the rules below; direct pushes from a clone are rejected.
+
+- The `ci` status check (lint, typecheck, unit tests, i18n drift) must pass before the merge button is enabled.
+- A **linear history** is required — only squash or rebase merges are accepted, no merge commits.
+- Force pushes to `main` and deletion of `main` are blocked.
+- Reviewer approvals are **not required** (this is a solo project today). The PR flow exists so CI gates every commit on `main`, not for a four-eyes check.
+
+Admin enforcement is intentionally left off (`enforce_admins: false`) so the maintainer can break-glass during incident response. Day-to-day work — including maintainer work — still goes through the PR flow above.
 
 ## Reporting bugs and proposing features
 
