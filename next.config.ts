@@ -18,6 +18,7 @@ const SECURITY_HEADERS = [
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  serverExternalPackages: ["postgres"],
   async headers() {
     return [{ source: "/:path*", headers: SECURITY_HEADERS }];
   },

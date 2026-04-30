@@ -33,6 +33,10 @@ The dev server runs on [http://localhost:3000](http://localhost:3000) with the d
 | Test watch mode | `pnpm test:watch` |
 | Coverage report | `pnpm test:coverage` |
 | i18n drift check | `node scripts/i18n-drift.mjs` |
+| Generate SQL migration from schema diff | `pnpm db:generate` |
+| Apply pending migrations to `DATABASE_URL` | `pnpm db:migrate` |
+| Open Drizzle Studio against `DATABASE_URL` | `pnpm db:studio` |
+| Push schema to database without migrations (dev only) | `pnpm db:push` |
 
 ## Environment variables
 
