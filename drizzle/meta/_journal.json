@@ -1,1 +1,13 @@
-{"version":"7","dialect":"postgresql","entries":[]}
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1777578440042,
+      "tag": "0000_m1_2_services_uptime_incidents",
+      "breakpoints": true
+    }
+  ]
+}
