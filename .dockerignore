@@ -1,0 +1,36 @@
+**/node_modules
+**/.next
+**/.turbo
+**/.cache
+
+.git
+.gitignore
+.github
+
+.env
+.env.*
+!.env.example
+
+# Test artefacts (coverage and Playwright outputs)
+coverage
+playwright-report
+test-results
+e2e
+
+# Local IDE/agent state
+.vscode
+.idea
+.DS_Store
+.claude
+
+# Docs and meta
+README.md
+CONTRIBUTING.md
+CODE_OF_CONDUCT.md
+LICENSE
+docs
+
+# Build artefacts that must not leak into the image context
+Dockerfile
+docker-bake.hcl
+.dockerignore
