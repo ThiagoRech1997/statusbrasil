@@ -2,6 +2,7 @@ import "server-only";
 
 import { logger } from "@/lib/logger";
 import type { GatusClient, GatusDriver } from "./client";
+import { createHttpGatusClient } from "./http";
 import { createStubGatusClient } from "./stub";
 
 export type { GatusClient, GatusDriver } from "./client";
@@ -33,8 +34,16 @@ function instantiate(driver: GatusDriver): GatusClient {
   switch (driver) {
     case "stub":
       return createStubGatusClient();
-    case "http":
-      throw new Error("GATUS_DRIVER=http is not implemented yet (planned for M1.4)");
+    case "http": {
+      const baseUrl = process.env.GATUS_API_URL?.trim();
+      if (!baseUrl) {
+        throw new Error("GATUS_API_URL is required when GATUS_DRIVER=http");
+      }
+      return createHttpGatusClient({
+        baseUrl,
+        token: process.env.GATUS_API_TOKEN,
+      });
+    }
   }
 }
 

@@ -3,6 +3,8 @@ import { cleanup } from "@testing-library/react";
 import type { ComponentProps } from "react";
 import { afterEach, vi } from "vitest";
 
+vi.mock("server-only", () => ({}));
+
 afterEach(() => {
   cleanup();
 });
