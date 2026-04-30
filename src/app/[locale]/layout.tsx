@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
@@ -42,6 +43,8 @@ export default async function LocaleLayout({
   }
   setRequestLocale(locale);
 
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
+
   return (
     <html
       lang={locale}
@@ -50,7 +53,7 @@ export default async function LocaleLayout({
     >
       <body className="min-h-full flex flex-col">
         <NextIntlClientProvider>
-          <ThemeProvider>
+          <ThemeProvider nonce={nonce}>
             <SkipToContent />
             <Header />
             <main id="main-content" className="flex flex-1 flex-col">
