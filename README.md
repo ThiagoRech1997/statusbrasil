@@ -69,8 +69,20 @@ scripts/
 ## Methodology and architecture
 
 - **Methodology** — how availability is computed and what counts as an incident: see the in-app [Methodology page](src/app/[locale]/) once published; tracked in the project roadmap.
-- **Architecture decisions** — see [`docs/adr/`](docs/adr/).
 - **Agent guide** — see [`AGENTS.md`](AGENTS.md) for repo conventions, Next 16 traps, and command reference.
+
+### Architecture decisions
+
+The full set lives in [`docs/adr/`](docs/adr/) (see the [ADR README](docs/adr/README.md) for the format).
+
+- [ADR-0001 — Next.js 16 App Router with React Server Components](docs/adr/0001-nextjs-16-app-router-rsc.md)
+- [ADR-0002 — Next.js standalone output for Docker](docs/adr/0002-standalone-docker-output.md)
+- [ADR-0003 — Gatus as the primary uptime source](docs/adr/0003-gatus-primary-source.md)
+- [ADR-0004 — Postgres for aggregates only](docs/adr/0004-postgres-aggregates-only.md)
+- [ADR-0005 — Plausible Analytics instead of Google Analytics](docs/adr/0005-plausible-over-ga.md)
+- [ADR-0006 — License the project under AGPL-3.0](docs/adr/0006-agpl-3-0.md)
+- [ADR-0007 — Biome instead of ESLint + Prettier](docs/adr/0007-biome-over-eslint-prettier.md)
+- [ADR-0008 — visx instead of Recharts](docs/adr/0008-visx-over-recharts.md)
 
 ## Contributing
 
