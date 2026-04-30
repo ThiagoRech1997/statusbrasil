@@ -7,6 +7,7 @@ const REDACT_KEYS = [
   "CRON_SECRET",
   "METRICS_SECRET",
   "DATABASE_URL",
+  "REDIS_URL",
   "GATUS_API_TOKEN",
   "SENTRY_DSN",
 ] as const;
