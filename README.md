@@ -36,14 +36,23 @@ The dev server runs on [http://localhost:3000](http://localhost:3000) with the d
 
 ## Environment variables
 
-All variables are optional in development. Sensitive keys are auto-redacted by the pino logger (see `src/lib/logger.ts`).
+Copy [`.env.example`](.env.example) to `.env.local` and fill in what your environment needs. All variables are optional in development; the **Required** column reflects what production deployments are expected to set. Sensitive keys are auto-redacted by the pino logger — see `src/lib/logger.ts` and use `/add-secret-env` when adding a new secret.
 
-| Variable | Scope | Purpose | Default |
-| --- | --- | --- | --- |
-| `NEXT_PUBLIC_SENTRY_DSN` | client | Sentry DSN for browser error reporting; init is skipped if unset | unset |
-| `SENTRY_DSN` | server | Sentry DSN for Node runtime error reporting; init is skipped if unset | unset |
-| `LOG_LEVEL` | server | pino log level (`trace`/`debug`/`info`/`warn`/`error`/`fatal`) | `debug` (dev), `info` (prod) |
-| `GATUS_DRIVER` | server | Gatus client driver (`stub` or `http`) | `stub` |
+| Variable | Scope | Required | Default | Purpose |
+| --- | --- | --- | --- | --- |
+| `GATUS_DRIVER` | server | no | `stub` | Gatus client driver: `stub` (fixtures) or `http` (real instance). |
+| `GATUS_API_URL` | server | when `GATUS_DRIVER=http` | — | Base URL of the Gatus instance the HTTP driver reads from. |
+| `GATUS_API_TOKEN` | server | when Gatus requires auth | — | Bearer token for the Gatus API. Redacted from logs. |
+| `DATABASE_URL` | server | yes (prod) | — | Postgres connection string for derived aggregates (see ADR-0004). Redacted. |
+| `REDIS_URL` | server | no | — | Redis cache URL. App fails open and serves uncached responses if absent. Redacted. |
+| `CRON_SECRET` | server | yes (prod) | — | Shared secret for the aggregate-refresh cron endpoint. Redacted. |
+| `METRICS_SECRET` | server | yes (prod) | — | Shared secret for the metrics scrape endpoint. Redacted. |
+| `SENTRY_DSN` | server | no | — | Sentry DSN for Node-runtime error reporting; init skipped if unset. Redacted. |
+| `NEXT_PUBLIC_SENTRY_DSN` | client | no | — | Sentry DSN for browser error reporting; init skipped if unset. |
+| `NEXT_PUBLIC_SITE_URL` | client | yes (prod) | — | Canonical public URL used to build absolute URLs (sitemap, OpenGraph). |
+| `NEXT_PUBLIC_PLAUSIBLE_DOMAIN` | client | no | — | Plausible `data-domain`; the analytics script is not loaded when unset. |
+| `NEXT_TELEMETRY_DISABLED` | build | no | — | Set to `1` to opt out of Next.js anonymous build telemetry. |
+| `LOG_LEVEL` | server | no | `debug` (dev), `info` (prod) | pino log level: `trace` / `debug` / `info` / `warn` / `error` / `fatal`. |
 
 ## Project structure
 
