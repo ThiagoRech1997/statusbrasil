@@ -40,6 +40,9 @@ jobs:
       - name: i18n drift
         run: node scripts/i18n-drift.mjs
 
+      - name: Validate OpenAPI spec
+        run: pnpm openapi:validate
+
   e2e:
     name: e2e
     runs-on: ubuntu-latest

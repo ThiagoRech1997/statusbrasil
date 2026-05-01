@@ -44,6 +44,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# openapi spec build artifact
+/.openapi/
+
 # claude code (runtime artifacts; skills/ and other shared config stay tracked)
 .claude/*.lock
 .claude/settings.local.json

@@ -1,6 +1,12 @@
+import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
 import type { IncidentSeverity as DomainIncidentSeverity } from "@/lib/queries/incidents";
 import type { CurrentStatus as DomainCurrentStatus } from "@/lib/queries/services";
+
+// Must run before any z.object(...) literal below: zod v4 instances do not
+// observe prototype changes made after instantiation, so schemas created
+// before this call would not have .openapi() and the generator would throw.
+extendZodWithOpenApi(z);
 
 export const MAX_LIMIT = 100;
 export const DEFAULT_LIMIT = 25;
