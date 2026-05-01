@@ -49,6 +49,12 @@
     "documentos": "Documents",
     "justica": "Justice"
   },
+  "DowntimeTicker": {
+    "summaryNone": "No accumulated downtime in the last 24h.",
+    "summary": "Today, {duration} of accumulated downtime across the monitored services.",
+    "worstService": "{name} accounts for {duration}.",
+    "ariaLabel": "Accumulated downtime over the last 24h: {summary}"
+  },
   "ContrasteDoDia": {
     "heading": "Today's contrast",
     "tagline": "The category that collects vs the category that serves — uptime over the last 24h.",

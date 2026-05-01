@@ -1,9 +1,11 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ContrasteDoDia } from "@/components/contraste-do-dia";
+import { DowntimeTicker } from "@/components/downtime-ticker";
 import { EmQuedaAgora } from "@/components/em-queda-agora";
 import { ServiceStatusCard } from "@/components/service-status-card";
 import { db } from "@/lib/db";
 import { getHomeDashboard, type HomeCategoryGroup } from "@/lib/queries/services";
+import { getCumulativeDowntime24h } from "@/lib/queries/uptime";
 
 export const revalidate = 60;
 
@@ -11,10 +13,11 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [tHome, tCategories, groups] = await Promise.all([
+  const [tHome, tCategories, groups, downtimeBySlug] = await Promise.all([
     getTranslations("Home"),
     getTranslations("Categories"),
     getHomeDashboard(db),
+    getCumulativeDowntime24h(db),
   ]);
 
   return (
@@ -34,6 +37,10 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         </p>
       ) : (
         <>
+          <DowntimeTicker
+            downtimeBySlug={downtimeBySlug}
+            services={groups.flatMap((g) => g.services)}
+          />
           <EmQuedaAgora groups={groups} />
           <ContrasteDoDia services={groups.flatMap((g) => g.services)} />
           <nav aria-label={tHome("servicesNavLabel")} className="flex flex-col gap-10">

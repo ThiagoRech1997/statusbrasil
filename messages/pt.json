@@ -49,6 +49,12 @@
     "documentos": "Documentos",
     "justica": "Justiça"
   },
+  "DowntimeTicker": {
+    "summaryNone": "Nenhuma indisponibilidade somada nas últimas 24h.",
+    "summary": "Hoje, {duration} de indisponibilidade somada nos serviços monitorados.",
+    "worstService": "{name} responde por {duration}.",
+    "ariaLabel": "Indisponibilidade acumulada nas últimas 24h: {summary}"
+  },
   "ContrasteDoDia": {
     "heading": "O contraste de hoje",
     "tagline": "Categoria que cobra vs categoria que atende — uptime nas últimas 24h.",
