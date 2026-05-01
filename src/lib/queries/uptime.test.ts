@@ -6,6 +6,7 @@ import {
   getCumulativeDowntime24h,
   getHistoryHourly,
   getMonthSummary,
+  getRolling30dSummary,
   monthBoundsUTC,
 } from "./uptime";
 
@@ -210,3 +211,102 @@ describe("getCumulativeDowntime24h", () => {
 function HOURS(n: number): number {
   return n * 60 * 60;
 }
+
+describe("getRolling30dSummary", () => {
+  const NOW = new Date("2026-04-30T12:00:00Z");
+
+  it("returns null uptime and null mttr when there is no data", async () => {
+    const summary = await getRolling30dSummary(testDb.db, "svc-a", { now: NOW });
+    expect(summary).toEqual({
+      uptimePct: null,
+      totalChecks: 0,
+      failedChecks: 0,
+      mttrSeconds: null,
+    });
+  });
+
+  it("aggregates hourly checks within the rolling 30d window", async () => {
+    const dayAgo = new Date(NOW.getTime() - 24 * 60 * 60 * 1000);
+    const fortyDaysAgo = new Date(NOW.getTime() - 40 * 24 * 60 * 60 * 1000);
+    await seedHourly(testDb.db, {
+      serviceSlug: "svc-a",
+      hour: dayAgo,
+      totalChecks: 60,
+      failedChecks: 6,
+    });
+    await seedHourly(testDb.db, {
+      serviceSlug: "svc-a",
+      hour: fortyDaysAgo,
+      totalChecks: 60,
+      failedChecks: 60,
+    });
+
+    const summary = await getRolling30dSummary(testDb.db, "svc-a", { now: NOW });
+    expect(summary.totalChecks).toBe(60);
+    expect(summary.failedChecks).toBe(6);
+    expect(summary.uptimePct).toBeCloseTo(((60 - 6) / 60) * 100, 5);
+  });
+
+  it("computes mttr as the mean durationSeconds of incidents that closed within the window", async () => {
+    const within = new Date(NOW.getTime() - 5 * 24 * 60 * 60 * 1000);
+    const beforeWindow = new Date(NOW.getTime() - 50 * 24 * 60 * 60 * 1000);
+
+    await seedIncident(testDb.db, {
+      serviceSlug: "svc-a",
+      startedAt: new Date(within.getTime() - 30 * 60 * 1000),
+      endedAt: within,
+      durationSeconds: 1800,
+    });
+    await seedIncident(testDb.db, {
+      serviceSlug: "svc-a",
+      startedAt: new Date(within.getTime() - 60 * 60 * 1000 - 30 * 60 * 1000),
+      endedAt: new Date(within.getTime() - 60 * 60 * 1000),
+      durationSeconds: 600,
+    });
+    // Closed before the window — must NOT be included
+    await seedIncident(testDb.db, {
+      serviceSlug: "svc-a",
+      startedAt: new Date(beforeWindow.getTime() - 60 * 60 * 1000),
+      endedAt: beforeWindow,
+      durationSeconds: 99999,
+    });
+    // Still open — must NOT be included
+    await seedIncident(testDb.db, {
+      serviceSlug: "svc-a",
+      startedAt: within,
+      endedAt: null,
+    });
+
+    const summary = await getRolling30dSummary(testDb.db, "svc-a", { now: NOW });
+    expect(summary.mttrSeconds).toBe(Math.round((1800 + 600) / 2));
+  });
+
+  it("does not bleed across services", async () => {
+    const within = new Date(NOW.getTime() - 5 * 24 * 60 * 60 * 1000);
+    await seedHourly(testDb.db, {
+      serviceSlug: "svc-a",
+      hour: within,
+      totalChecks: 60,
+      failedChecks: 0,
+    });
+    await seedHourly(testDb.db, {
+      serviceSlug: "svc-b",
+      hour: within,
+      totalChecks: 60,
+      failedChecks: 30,
+    });
+    await seedIncident(testDb.db, {
+      serviceSlug: "svc-b",
+      startedAt: new Date(within.getTime() - 60 * 60 * 1000),
+      endedAt: within,
+      durationSeconds: 3600,
+    });
+
+    const a = await getRolling30dSummary(testDb.db, "svc-a", { now: NOW });
+    const b = await getRolling30dSummary(testDb.db, "svc-b", { now: NOW });
+    expect(a.failedChecks).toBe(0);
+    expect(a.mttrSeconds).toBeNull();
+    expect(b.failedChecks).toBe(30);
+    expect(b.mttrSeconds).toBe(3600);
+  });
+});

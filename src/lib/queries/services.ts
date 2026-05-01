@@ -1,8 +1,9 @@
 import "server-only";
 
-import { asc, desc, eq, gte, isNull } from "drizzle-orm";
+import { and, asc, desc, eq, gte, isNull } from "drizzle-orm";
 import type { DB } from "@/lib/db";
 import { incidents, services, serviceUptimeHourly } from "@/lib/db/schema";
+import type { IncidentSeverity } from "./incidents";
 
 export type CurrentStatus = "operational" | "degraded" | "down" | "unknown";
 
@@ -53,6 +54,19 @@ export interface CategoryStatusOptions {
   now?: Date;
 }
 
+export function deriveCurrentStatus(args: {
+  uptime1h: number | null;
+  openIncident: { severity: IncidentSeverity } | null;
+}): CurrentStatus {
+  if (args.openIncident) {
+    return args.openIncident.severity === "total" ? "down" : "degraded";
+  }
+  if (args.uptime1h === null) return "unknown";
+  if (args.uptime1h < DOWN_THRESHOLD_PCT) return "down";
+  if (args.uptime1h < OPERATIONAL_THRESHOLD_PCT) return "degraded";
+  return "operational";
+}
+
 export async function getServicesByCategoryStatus(
   db: DB,
   opts: CategoryStatusOptions = {},
@@ -90,21 +104,9 @@ export async function getServicesByCategoryStatus(
   const groups = new Map<string, ServiceWithStatus[]>();
   for (const svc of activeServices) {
     const latest = latestHourlyBySlug.get(svc.slug);
-    const open = openBySlug.get(svc.slug);
+    const open = openBySlug.get(svc.slug) ?? null;
     const uptime1h = latest ? Number(latest.uptimePct) : null;
-
-    let status: CurrentStatus;
-    if (open) {
-      status = open.severity === "total" ? "down" : "degraded";
-    } else if (uptime1h === null) {
-      status = "unknown";
-    } else if (uptime1h < DOWN_THRESHOLD_PCT) {
-      status = "down";
-    } else if (uptime1h < OPERATIONAL_THRESHOLD_PCT) {
-      status = "degraded";
-    } else {
-      status = "operational";
-    }
+    const status = deriveCurrentStatus({ uptime1h, openIncident: open });
 
     const entry: ServiceWithStatus = { ...svc, status, uptime1h };
     const bucket = groups.get(svc.category);
@@ -113,4 +115,41 @@ export async function getServicesByCategoryStatus(
   }
 
   return [...groups.entries()].map(([category, list]) => ({ category, services: list }));
+}
+
+export interface ServiceWithStatusOptions {
+  now?: Date;
+}
+
+export async function getServiceWithStatusBySlug(
+  db: DB,
+  slug: string,
+  opts: ServiceWithStatusOptions = {},
+): Promise<ServiceWithStatus | null> {
+  const now = opts.now ?? new Date();
+  const cutoff = new Date(now.getTime() - FRESH_WINDOW_MS);
+
+  const [serviceRows, recentHourly, openIncidents] = await Promise.all([
+    db.select().from(services).where(eq(services.slug, slug)).limit(1),
+    db
+      .select()
+      .from(serviceUptimeHourly)
+      .where(and(eq(serviceUptimeHourly.serviceSlug, slug), gte(serviceUptimeHourly.hour, cutoff)))
+      .orderBy(desc(serviceUptimeHourly.hour))
+      .limit(1),
+    db
+      .select()
+      .from(incidents)
+      .where(and(eq(incidents.serviceSlug, slug), isNull(incidents.endedAt))),
+  ]);
+
+  const svc = serviceRows[0];
+  if (!svc) return null;
+
+  const latest = recentHourly[0];
+  const uptime1h = latest ? Number(latest.uptimePct) : null;
+  const open = openIncidents.find((i) => i.severity === "total") ?? openIncidents[0] ?? null;
+  const status = deriveCurrentStatus({ uptime1h, openIncident: open });
+
+  return { ...svc, status, uptime1h };
 }

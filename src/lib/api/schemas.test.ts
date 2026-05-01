@@ -226,24 +226,47 @@ describe("ServiceDetailResponse + IncidentItem + IncidentsResponse", () => {
   };
 
   it("validates a full ServiceDetailResponse", () => {
-    expect(
-      ServiceDetailResponse.parse({
-        service: {
-          slug: "gov-br",
-          name: "Portal gov.br",
-          agency: "Governo Federal",
-          category: "atendimento",
-          sphere: "federal",
-          url: "https://www.gov.br/",
-          description: null,
-          status: "operational",
-          uptime1h: 100,
-        },
-        uptime24h: 99.99,
-        downtime24hSeconds: 30,
-        recentIncidents: [incident],
-      }).recentIncidents,
-    ).toHaveLength(1);
+    const parsed = ServiceDetailResponse.parse({
+      service: {
+        slug: "gov-br",
+        name: "Portal gov.br",
+        agency: "Governo Federal",
+        category: "atendimento",
+        sphere: "federal",
+        url: "https://www.gov.br/",
+        description: null,
+        status: "operational",
+        uptime1h: 100,
+      },
+      uptime_pct_30d: 99.95,
+      mttr_30d_seconds: 1200,
+      last_incident: incident,
+    });
+    expect(parsed.uptime_pct_30d).toBe(99.95);
+    expect(parsed.mttr_30d_seconds).toBe(1200);
+    expect(parsed.last_incident?.id).toBe(incident.id);
+  });
+
+  it("accepts null for the 30d metrics and last_incident when there is no data", () => {
+    const parsed = ServiceDetailResponse.parse({
+      service: {
+        slug: "x",
+        name: "X",
+        agency: "X",
+        category: "x",
+        sphere: "federal",
+        url: "https://x.test/",
+        description: null,
+        status: "unknown",
+        uptime1h: null,
+      },
+      uptime_pct_30d: null,
+      mttr_30d_seconds: null,
+      last_incident: null,
+    });
+    expect(parsed.uptime_pct_30d).toBeNull();
+    expect(parsed.mttr_30d_seconds).toBeNull();
+    expect(parsed.last_incident).toBeNull();
   });
 
   it("rejects an incident with a non-uuid id", () => {

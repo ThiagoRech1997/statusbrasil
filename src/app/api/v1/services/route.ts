@@ -1,8 +1,7 @@
-import { NextResponse } from "next/server";
 import type { z } from "zod";
 import { decodeCursor, encodeCursor, InvalidCursorError } from "@/lib/api/cursor";
+import { apiError, publicJson, zodValidationError } from "@/lib/api/responses";
 import {
-  type ApiErrorResponse,
   parseSearchParams,
   type ServiceItem,
   ServicesQueryParams,
@@ -10,7 +9,6 @@ import {
   type ServicesSort,
 } from "@/lib/api/schemas";
 import { db as defaultDb } from "@/lib/db";
-import { logger } from "@/lib/logger";
 import { withHttpMetrics } from "@/lib/metrics";
 import {
   type CurrentStatus,
@@ -22,7 +20,6 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const ROUTE = "/api/v1/services";
-const CACHE_CONTROL = "s-maxage=60, stale-while-revalidate=300";
 
 const SEVERITY_RANK: Record<CurrentStatus, number> = {
   down: 0,
@@ -38,7 +35,7 @@ async function handler(req: Request): Promise<Response> {
   try {
     query = parseSearchParams(ServicesQueryParams, url.searchParams);
   } catch (err) {
-    return validationError(err);
+    return zodValidationError(err);
   }
 
   let offset = 0;
@@ -47,7 +44,7 @@ async function handler(req: Request): Promise<Response> {
       offset = decodeCursor(query.cursor).offset;
     } catch (err) {
       const detail = err instanceof InvalidCursorError ? err.message : "invalid cursor";
-      return errorResponse(400, "validation_error", "invalid cursor", { cursor: [detail] });
+      return apiError(400, "validation_error", "invalid cursor", { cursor: [detail] });
     }
   }
 
@@ -70,13 +67,7 @@ async function handler(req: Request): Promise<Response> {
     ...(hasMore ? { next_cursor: encodeCursor({ offset: offset + page.length }) } : {}),
   };
 
-  return new Response(JSON.stringify(body), {
-    status: 200,
-    headers: {
-      "content-type": "application/json; charset=utf-8",
-      "cache-control": CACHE_CONTROL,
-    },
-  });
+  return publicJson(body);
 }
 
 function comparator(sort: ServicesSort): (a: ServiceWithStatus, b: ServiceWithStatus) => number {
@@ -115,37 +106,6 @@ function toServiceItem(s: ServiceWithStatus): ServiceItem {
     status: s.status,
     uptime1h: s.uptime1h,
   };
-}
-
-function validationError(err: unknown): Response {
-  const issues =
-    err && typeof err === "object" && "issues" in err
-      ? (err as { issues: Array<{ path: PropertyKey[]; message: string }> }).issues
-      : null;
-  const details = issues
-    ? issues.reduce<Record<string, string[]>>((acc, issue) => {
-        const key = issue.path.length > 0 ? String(issue.path[0]) : "_";
-        const list = acc[key] ?? [];
-        list.push(issue.message);
-        acc[key] = list;
-        return acc;
-      }, {})
-    : undefined;
-  logger.debug(
-    { err: err instanceof Error ? err.message : String(err) },
-    "services: invalid query",
-  );
-  return errorResponse(400, "validation_error", "invalid query parameters", details);
-}
-
-function errorResponse(
-  status: number,
-  code: ApiErrorResponse["code"],
-  error: string,
-  details?: unknown,
-): Response {
-  const body: ApiErrorResponse = { error, code, ...(details !== undefined ? { details } : {}) };
-  return NextResponse.json(body, { status });
 }
 
 export const GET = withHttpMetrics(handler, ROUTE);

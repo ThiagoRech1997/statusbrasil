@@ -2,7 +2,12 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import type { TestDb } from "./__fixtures__/test-db";
 import { createTestDb, seedHourly, seedIncident, seedService } from "./__fixtures__/test-db";
-import { getServiceBySlug, getServicesByCategoryStatus, listServices } from "./services";
+import {
+  getServiceBySlug,
+  getServicesByCategoryStatus,
+  getServiceWithStatusBySlug,
+  listServices,
+} from "./services";
 
 let testDb: TestDb;
 
@@ -141,5 +146,53 @@ describe("getServicesByCategoryStatus", () => {
 
     const [group] = await getServicesByCategoryStatus(testDb.db, { now: NOW });
     expect(group?.services[0]?.status).toBe("degraded");
+  });
+});
+
+describe("getServiceWithStatusBySlug", () => {
+  const NOW = new Date("2026-04-30T12:00:00Z");
+
+  it("returns null when the slug is unknown", async () => {
+    const result = await getServiceWithStatusBySlug(testDb.db, "missing", { now: NOW });
+    expect(result).toBeNull();
+  });
+
+  it("returns the service with derived status from the latest hourly row", async () => {
+    await seedService(testDb.db, { slug: "good", name: "Good" });
+    await seedHourly(testDb.db, {
+      serviceSlug: "good",
+      hour: new Date(NOW.getTime() - 30 * 60 * 1000),
+      uptimePct: 99.5,
+    });
+    const result = await getServiceWithStatusBySlug(testDb.db, "good", { now: NOW });
+    expect(result).toMatchObject({ slug: "good", status: "operational", uptime1h: 99.5 });
+  });
+
+  it("returns status 'unknown' when no hourly row exists in the freshness window", async () => {
+    await seedService(testDb.db, { slug: "stale", name: "Stale" });
+    await seedHourly(testDb.db, {
+      serviceSlug: "stale",
+      hour: new Date(NOW.getTime() - 3 * 60 * 60 * 1000),
+      uptimePct: 100,
+    });
+    const result = await getServiceWithStatusBySlug(testDb.db, "stale", { now: NOW });
+    expect(result?.status).toBe("unknown");
+    expect(result?.uptime1h).toBeNull();
+  });
+
+  it("escalates to 'down' on a total open incident regardless of uptime", async () => {
+    await seedService(testDb.db, { slug: "totaled", name: "Totaled" });
+    await seedHourly(testDb.db, {
+      serviceSlug: "totaled",
+      hour: new Date(NOW.getTime() - 10 * 60 * 1000),
+      uptimePct: 100,
+    });
+    await seedIncident(testDb.db, {
+      serviceSlug: "totaled",
+      startedAt: new Date(NOW.getTime() - 5 * 60 * 1000),
+      severity: "total",
+    });
+    const result = await getServiceWithStatusBySlug(testDb.db, "totaled", { now: NOW });
+    expect(result?.status).toBe("down");
   });
 });

@@ -1,6 +1,21 @@
 import "server-only";
 
-import { and, asc, between, count, eq, gte, inArray, isNull, lt, lte, or, sum } from "drizzle-orm";
+import {
+  and,
+  asc,
+  avg,
+  between,
+  count,
+  eq,
+  gte,
+  inArray,
+  isNotNull,
+  isNull,
+  lt,
+  lte,
+  or,
+  sum,
+} from "drizzle-orm";
 import type { DB } from "@/lib/db";
 import { incidents, serviceUptimeHourly } from "@/lib/db/schema";
 
@@ -160,4 +175,77 @@ export async function getCumulativeDowntime24h(
   }
 
   return result;
+}
+
+export interface Rolling30dSummary {
+  uptimePct: number | null;
+  totalChecks: number;
+  failedChecks: number;
+  mttrSeconds: number | null;
+}
+
+export interface Rolling30dOptions {
+  now?: Date;
+}
+
+const DAYS_30 = 30;
+
+/**
+ * Rolling 30-day summary for a service.
+ *
+ * uptimePct is computed from `service_uptime_hourly` rows whose `hour` falls
+ * inside [now - 30d, now]. mttrSeconds is the mean `durationSeconds` of
+ * incidents that **closed** within the same window (the standard MTTR reading
+ * — "of the incidents that resolved this period, how long did they take").
+ * Both are null when there is no data.
+ */
+export async function getRolling30dSummary(
+  db: DB,
+  slug: string,
+  opts: Rolling30dOptions = {},
+): Promise<Rolling30dSummary> {
+  const now = opts.now ?? new Date();
+  const start = new Date(now.getTime() - DAYS_30 * HOURS_PER_DAY * MS_PER_HOUR);
+
+  const [hourlyAgg, mttrAgg] = await Promise.all([
+    db
+      .select({
+        totalChecks: sum(serviceUptimeHourly.totalChecks).mapWith(Number),
+        failedChecks: sum(serviceUptimeHourly.failedChecks).mapWith(Number),
+      })
+      .from(serviceUptimeHourly)
+      .where(
+        and(
+          eq(serviceUptimeHourly.serviceSlug, slug),
+          gte(serviceUptimeHourly.hour, start),
+          lte(serviceUptimeHourly.hour, now),
+        ),
+      ),
+    db
+      .select({
+        avgDurationSeconds: avg(incidents.durationSeconds).mapWith(Number),
+        closedCount: count(incidents.id),
+      })
+      .from(incidents)
+      .where(
+        and(
+          eq(incidents.serviceSlug, slug),
+          isNotNull(incidents.endedAt),
+          gte(incidents.endedAt, start),
+          lte(incidents.endedAt, now),
+        ),
+      ),
+  ]);
+
+  const totalChecks = hourlyAgg[0]?.totalChecks ?? 0;
+  const failedChecks = hourlyAgg[0]?.failedChecks ?? 0;
+  const uptimePct = totalChecks > 0 ? ((totalChecks - failedChecks) / totalChecks) * 100 : null;
+
+  const closedCount = mttrAgg[0]?.closedCount ?? 0;
+  const mttrSeconds =
+    closedCount > 0 && mttrAgg[0]?.avgDurationSeconds != null
+      ? Math.round(mttrAgg[0].avgDurationSeconds)
+      : null;
+
+  return { uptimePct, totalChecks, failedChecks, mttrSeconds };
 }

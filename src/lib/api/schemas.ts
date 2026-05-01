@@ -5,7 +5,7 @@ import type { CurrentStatus as DomainCurrentStatus } from "@/lib/queries/service
 export const MAX_LIMIT = 100;
 export const DEFAULT_LIMIT = 25;
 
-const Slug = z
+export const Slug = z
   .string()
   .min(1)
   .max(80)
@@ -90,9 +90,9 @@ export type IncidentItem = z.infer<typeof IncidentItem>;
 
 export const ServiceDetailResponse = z.object({
   service: ServiceItem,
-  uptime24h: z.number().min(0).max(100).nullable(),
-  downtime24hSeconds: z.number().int().nonnegative(),
-  recentIncidents: z.array(IncidentItem),
+  uptime_pct_30d: z.number().min(0).max(100).nullable(),
+  mttr_30d_seconds: z.number().int().nonnegative().nullable(),
+  last_incident: IncidentItem.nullable(),
 });
 export type ServiceDetailResponse = z.infer<typeof ServiceDetailResponse>;
 
