@@ -35,6 +35,20 @@
     "license": "Código aberto sob licença AGPL-3.0",
     "tagline": "Portal público — dados oficiais, números crus, sem juízo de valor automatizado"
   },
+  "Home": {
+    "heading": "StatusBrasil",
+    "tagline": "Disponibilidade dos serviços do governo brasileiro",
+    "servicesNavLabel": "Serviços por categoria",
+    "empty": "Nenhum serviço cadastrado ainda."
+  },
+  "Categories": {
+    "atendimento": "Atendimento",
+    "arrecadacao": "Arrecadação",
+    "saude": "Saúde",
+    "trabalho": "Trabalho",
+    "documentos": "Documentos",
+    "justica": "Justiça"
+  },
   "ServiceStatusCard": {
     "status": {
       "operational": "Operacional",

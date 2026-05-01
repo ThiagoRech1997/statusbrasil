@@ -35,6 +35,20 @@
     "license": "Open source under AGPL-3.0",
     "tagline": "Public portal — official data, raw numbers, no automated value judgments"
   },
+  "Home": {
+    "heading": "StatusBrasil",
+    "tagline": "Brazilian government services availability tracker",
+    "servicesNavLabel": "Services by category",
+    "empty": "No services tracked yet."
+  },
+  "Categories": {
+    "atendimento": "Public services",
+    "arrecadacao": "Tax & revenue",
+    "saude": "Health",
+    "trabalho": "Labor",
+    "documentos": "Documents",
+    "justica": "Justice"
+  },
   "ServiceStatusCard": {
     "status": {
       "operational": "Operational",

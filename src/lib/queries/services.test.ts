@@ -3,6 +3,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import type { TestDb } from "./__fixtures__/test-db";
 import { createTestDb, seedHourly, seedIncident, seedService } from "./__fixtures__/test-db";
 import {
+  getHomeDashboard,
   getServiceBySlug,
   getServicesByCategoryStatus,
   getServiceWithStatusBySlug,
@@ -194,5 +195,111 @@ describe("getServiceWithStatusBySlug", () => {
     });
     const result = await getServiceWithStatusBySlug(testDb.db, "totaled", { now: NOW });
     expect(result?.status).toBe("down");
+  });
+});
+
+describe("getHomeDashboard", () => {
+  const NOW = new Date("2026-04-30T12:00:00Z");
+  const HOUR_MS = 60 * 60 * 1000;
+  const DAY_MS = 24 * HOUR_MS;
+
+  it("returns an empty list when no services exist", async () => {
+    const groups = await getHomeDashboard(testDb.db, { now: NOW });
+    expect(groups).toEqual([]);
+  });
+
+  it("aggregates uptime over the last 7 days, ignoring older buckets", async () => {
+    await seedService(testDb.db, { slug: "svc", category: "saude" });
+    // Inside 7d window: 600 checks, 6 failed → uptime = 99%
+    await seedHourly(testDb.db, {
+      serviceSlug: "svc",
+      hour: new Date(NOW.getTime() - HOUR_MS),
+      totalChecks: 100,
+      failedChecks: 1,
+    });
+    await seedHourly(testDb.db, {
+      serviceSlug: "svc",
+      hour: new Date(NOW.getTime() - 2 * DAY_MS),
+      totalChecks: 500,
+      failedChecks: 5,
+    });
+    // Outside 7d window: must be ignored
+    await seedHourly(testDb.db, {
+      serviceSlug: "svc",
+      hour: new Date(NOW.getTime() - 8 * DAY_MS),
+      totalChecks: 1000,
+      failedChecks: 1000,
+    });
+
+    const [group] = await getHomeDashboard(testDb.db, { now: NOW });
+    const svc = group?.services[0];
+    expect(svc?.uptime7dPct).toBeCloseTo(99, 5);
+  });
+
+  it("returns null uptime7dPct when there are no hourly rows in the 7d window", async () => {
+    await seedService(testDb.db, { slug: "fresh", category: "saude" });
+    await seedHourly(testDb.db, {
+      serviceSlug: "fresh",
+      hour: new Date(NOW.getTime() - 8 * DAY_MS),
+      totalChecks: 100,
+      failedChecks: 0,
+    });
+
+    const [group] = await getHomeDashboard(testDb.db, { now: NOW });
+    expect(group?.services[0]?.uptime7dPct).toBeNull();
+  });
+
+  it("picks the most recent incident's startedAt regardless of severity or open/closed", async () => {
+    await seedService(testDb.db, { slug: "svc", category: "saude" });
+    const older = new Date(NOW.getTime() - 5 * DAY_MS);
+    const newer = new Date(NOW.getTime() - 2 * HOUR_MS);
+    await seedIncident(testDb.db, {
+      serviceSlug: "svc",
+      startedAt: older,
+      endedAt: new Date(older.getTime() + HOUR_MS),
+      severity: "total",
+    });
+    await seedIncident(testDb.db, {
+      serviceSlug: "svc",
+      startedAt: newer,
+      severity: "partial",
+    });
+
+    const [group] = await getHomeDashboard(testDb.db, { now: NOW });
+    expect(group?.services[0]?.lastIncidentAt?.toISOString()).toBe(newer.toISOString());
+  });
+
+  it("returns null lastIncidentAt for services without any incident", async () => {
+    await seedService(testDb.db, { slug: "clean", category: "saude" });
+    await seedHourly(testDb.db, {
+      serviceSlug: "clean",
+      hour: new Date(NOW.getTime() - HOUR_MS),
+      totalChecks: 60,
+      failedChecks: 0,
+    });
+
+    const [group] = await getHomeDashboard(testDb.db, { now: NOW });
+    expect(group?.services[0]?.lastIncidentAt).toBeNull();
+  });
+
+  it("preserves the category grouping shape from getServicesByCategoryStatus", async () => {
+    await seedService(testDb.db, { slug: "a", category: "saude" });
+    await seedService(testDb.db, { slug: "b", category: "trabalho" });
+    await seedHourly(testDb.db, {
+      serviceSlug: "a",
+      hour: new Date(NOW.getTime() - HOUR_MS),
+      totalChecks: 60,
+      failedChecks: 0,
+    });
+    await seedHourly(testDb.db, {
+      serviceSlug: "b",
+      hour: new Date(NOW.getTime() - HOUR_MS),
+      totalChecks: 60,
+      failedChecks: 0,
+    });
+
+    const groups = await getHomeDashboard(testDb.db, { now: NOW });
+    expect(groups.map((g) => g.category)).toEqual(["saude", "trabalho"]);
+    expect(groups.flatMap((g) => g.services.map((s) => s.slug))).toEqual(["a", "b"]);
   });
 });
