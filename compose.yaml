@@ -1,0 +1,26 @@
+# Local development services for StatusBrasil.
+#
+# Boots a Postgres instance whose connection string matches the placeholder
+# DATABASE_URL in `.env.example` so `cp .env.example .env.local` works
+# out of the box. Production uses managed Postgres — this file is dev-only.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: statusbrasil-pg
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: statusbrasil
+    ports:
+      - "5432:5432"
+    volumes:
+      - statusbrasil_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d statusbrasil"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  statusbrasil_pgdata:
