@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const runAggregationMock = vi.fn();
 const limitMock = vi.fn();
+const incCronRunMock = vi.fn();
 
 vi.mock("@/lib/aggregator", async () => {
   const actual = await vi.importActual<typeof import("@/lib/aggregator")>("@/lib/aggregator");
@@ -13,6 +14,11 @@ vi.mock("@/lib/aggregator", async () => {
 
 vi.mock("@/lib/ratelimit", () => ({
   getRateLimiter: () => ({ limit: limitMock }),
+}));
+
+vi.mock("@/lib/metrics", () => ({
+  incCronRun: incCronRunMock,
+  withHttpMetrics: <T extends (...args: unknown[]) => unknown>(handler: T): T => handler,
 }));
 
 vi.mock("@/lib/logger", () => ({
@@ -38,6 +44,7 @@ describe("POST /api/cron/aggregate", () => {
   beforeEach(() => {
     runAggregationMock.mockReset();
     limitMock.mockReset();
+    incCronRunMock.mockReset();
     limitMock.mockResolvedValue({ success: true, limit: 6, remaining: 5, reset: 0 });
     process.env.CRON_SECRET = "test-secret";
   });
@@ -104,6 +111,7 @@ describe("POST /api/cron/aggregate", () => {
     });
     expect(runAggregationMock).toHaveBeenCalledWith({ hours: 12 });
     expect(limitMock).not.toHaveBeenCalled();
+    expect(incCronRunMock).toHaveBeenCalledWith("aggregate", "success");
   });
 
   it("uses the default hours (2) when query is omitted", async () => {
@@ -119,10 +127,17 @@ describe("POST /api/cron/aggregate", () => {
     expect(runAggregationMock).toHaveBeenCalledWith({ hours: 2 });
   });
 
-  it("returns 500 when the aggregator throws", async () => {
+  it("returns 500 when the aggregator throws and records cron_runs_total fail", async () => {
     runAggregationMock.mockRejectedValue(new Error("db down"));
     const { POST } = await loadRoute();
     const res = await POST(makeRequest({ secret: "test-secret" }));
     expect(res.status).toBe(500);
+    expect(incCronRunMock).toHaveBeenCalledWith("aggregate", "fail");
+  });
+
+  it("does not increment cron_runs_total on auth failure", async () => {
+    const { POST } = await loadRoute();
+    await POST(makeRequest({ secret: "wrong" }));
+    expect(incCronRunMock).not.toHaveBeenCalled();
   });
 });
