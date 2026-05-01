@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { ContrasteDoDia } from "@/components/contraste-do-dia";
 import { EmQuedaAgora } from "@/components/em-queda-agora";
 import { ServiceStatusCard } from "@/components/service-status-card";
 import { db } from "@/lib/db";
@@ -34,6 +35,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
       ) : (
         <>
           <EmQuedaAgora groups={groups} />
+          <ContrasteDoDia services={groups.flatMap((g) => g.services)} />
           <nav aria-label={tHome("servicesNavLabel")} className="flex flex-col gap-10">
             {groups.map((group) => (
               <CategorySection

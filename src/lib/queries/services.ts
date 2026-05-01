@@ -122,6 +122,7 @@ export interface ServiceWithStatusOptions {
 }
 
 export interface ServiceCardRow extends ServiceWithStatus {
+  uptime24hPct: number | null;
   uptime7dPct: number | null;
   lastIncidentAt: Date | null;
 }
@@ -133,14 +134,43 @@ export interface HomeCategoryGroup {
 
 const HOURS_PER_DAY = 24;
 const MS_PER_HOUR = 60 * 60 * 1000;
-const SEVEN_DAYS_MS = 7 * HOURS_PER_DAY * MS_PER_HOUR;
+const ONE_DAY_MS = HOURS_PER_DAY * MS_PER_HOUR;
+const SEVEN_DAYS_MS = 7 * ONE_DAY_MS;
+
+async function aggregateUptimeBySlug(
+  db: DB,
+  slugs: string[],
+  since: Date,
+): Promise<Map<string, number>> {
+  const rows = await db
+    .select({
+      serviceSlug: serviceUptimeHourly.serviceSlug,
+      totalChecks: sum(serviceUptimeHourly.totalChecks).mapWith(Number),
+      failedChecks: sum(serviceUptimeHourly.failedChecks).mapWith(Number),
+    })
+    .from(serviceUptimeHourly)
+    .where(
+      and(inArray(serviceUptimeHourly.serviceSlug, slugs), gte(serviceUptimeHourly.hour, since)),
+    )
+    .groupBy(serviceUptimeHourly.serviceSlug);
+
+  const out = new Map<string, number>();
+  for (const row of rows) {
+    const total = row.totalChecks ?? 0;
+    if (total === 0) continue;
+    const failed = row.failedChecks ?? 0;
+    out.set(row.serviceSlug, ((total - failed) / total) * 100);
+  }
+  return out;
+}
 
 /**
  * Home dashboard composition: groups by category and enriches each row with
- * 7-day uptime and the most recent incident timestamp. Computed via two
- * batched aggregate queries — never per-service. Use exclusively from the
- * home page; the public API endpoints stay on getServicesByCategoryStatus
- * so they don't pay for fields that are stripped at the wire.
+ * 24-hour uptime, 7-day uptime, and the most recent incident timestamp.
+ * Computed via three batched aggregate queries — never per-service. Use
+ * exclusively from the home page; the public API endpoints stay on
+ * getServicesByCategoryStatus so they don't pay for fields that are
+ * stripped at the wire.
  */
 export async function getHomeDashboard(
   db: DB,
@@ -152,23 +182,12 @@ export async function getHomeDashboard(
 
   if (slugs.length === 0) return [];
 
+  const oneDayAgo = new Date(now.getTime() - ONE_DAY_MS);
   const sevenDaysAgo = new Date(now.getTime() - SEVEN_DAYS_MS);
 
-  const [uptimeRows, incidentRows] = await Promise.all([
-    db
-      .select({
-        serviceSlug: serviceUptimeHourly.serviceSlug,
-        totalChecks: sum(serviceUptimeHourly.totalChecks).mapWith(Number),
-        failedChecks: sum(serviceUptimeHourly.failedChecks).mapWith(Number),
-      })
-      .from(serviceUptimeHourly)
-      .where(
-        and(
-          inArray(serviceUptimeHourly.serviceSlug, slugs),
-          gte(serviceUptimeHourly.hour, sevenDaysAgo),
-        ),
-      )
-      .groupBy(serviceUptimeHourly.serviceSlug),
+  const [uptime24hBySlug, uptime7dBySlug, incidentRows] = await Promise.all([
+    aggregateUptimeBySlug(db, slugs, oneDayAgo),
+    aggregateUptimeBySlug(db, slugs, sevenDaysAgo),
     db
       .select({
         serviceSlug: incidents.serviceSlug,
@@ -178,14 +197,6 @@ export async function getHomeDashboard(
       .where(inArray(incidents.serviceSlug, slugs))
       .groupBy(incidents.serviceSlug),
   ]);
-
-  const uptime7dBySlug = new Map<string, number>();
-  for (const row of uptimeRows) {
-    const total = row.totalChecks ?? 0;
-    if (total === 0) continue;
-    const failed = row.failedChecks ?? 0;
-    uptime7dBySlug.set(row.serviceSlug, ((total - failed) / total) * 100);
-  }
 
   const lastIncidentBySlug = new Map<string, Date>();
   for (const row of incidentRows) {
@@ -200,6 +211,7 @@ export async function getHomeDashboard(
     category: group.category,
     services: group.services.map((svc) => ({
       ...svc,
+      uptime24hPct: uptime24hBySlug.get(svc.slug) ?? null,
       uptime7dPct: uptime7dBySlug.get(svc.slug) ?? null,
       lastIncidentAt: lastIncidentBySlug.get(svc.slug) ?? null,
     })),

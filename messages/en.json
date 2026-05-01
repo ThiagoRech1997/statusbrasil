@@ -49,6 +49,15 @@
     "documentos": "Documents",
     "justica": "Justice"
   },
+  "ContrasteDoDia": {
+    "heading": "Today's contrast",
+    "tagline": "The category that collects vs the category that serves — uptime over the last 24h.",
+    "sideLabelArrecadacao": "Tax & revenue",
+    "sideLabelAtendimento": "Public services",
+    "uptimeWindow": "Uptime 24h",
+    "gap": "Difference: {value} percentage points",
+    "ariaLabel": "{heading}: {bestName} ({bestCategory}) {bestPct}, {worstName} ({worstCategory}) {worstPct}, gap of {gap} percentage points."
+  },
   "EmQuedaAgora": {
     "heading": "Currently down",
     "summary": "{count, plural, one {# service is having issues right now} other {# services are having issues right now}}",

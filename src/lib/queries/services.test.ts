@@ -249,6 +249,46 @@ describe("getHomeDashboard", () => {
     expect(group?.services[0]?.uptime7dPct).toBeNull();
   });
 
+  it("aggregates uptime over the last 24 hours, ignoring older buckets", async () => {
+    await seedService(testDb.db, { slug: "svc", category: "saude" });
+    // Inside 24h window: 50 checks, 1 failed → uptime = 98%
+    await seedHourly(testDb.db, {
+      serviceSlug: "svc",
+      hour: new Date(NOW.getTime() - 2 * HOUR_MS),
+      totalChecks: 50,
+      failedChecks: 1,
+    });
+    // Outside 24h but still inside 7d. The high failure ratio is intentional —
+    // it lets us assert that the 24h window pegs at 98% while the 7d window
+    // sees a much worse 54%, proving the windows are independent.
+    await seedHourly(testDb.db, {
+      serviceSlug: "svc",
+      hour: new Date(NOW.getTime() - 2 * DAY_MS),
+      totalChecks: 500,
+      failedChecks: 250,
+    });
+
+    const [group] = await getHomeDashboard(testDb.db, { now: NOW });
+    expect(group?.services[0]?.uptime24hPct).toBeCloseTo(98, 5);
+    // 7d sums both rows: (550 - 251) / 550 = 54.36...%
+    expect(group?.services[0]?.uptime7dPct).toBeCloseTo(54.3636, 3);
+  });
+
+  it("returns null uptime24hPct when no hourly rows fall inside the 24h window", async () => {
+    await seedService(testDb.db, { slug: "stale", category: "saude" });
+    await seedHourly(testDb.db, {
+      serviceSlug: "stale",
+      hour: new Date(NOW.getTime() - 2 * DAY_MS),
+      totalChecks: 100,
+      failedChecks: 0,
+    });
+
+    const [group] = await getHomeDashboard(testDb.db, { now: NOW });
+    expect(group?.services[0]?.uptime24hPct).toBeNull();
+    // 7d still has data
+    expect(group?.services[0]?.uptime7dPct).toBeCloseTo(100, 5);
+  });
+
   it("picks the most recent incident's startedAt regardless of severity or open/closed", async () => {
     await seedService(testDb.db, { slug: "svc", category: "saude" });
     const older = new Date(NOW.getTime() - 5 * DAY_MS);

@@ -49,6 +49,15 @@
     "documentos": "Documentos",
     "justica": "Justiça"
   },
+  "ContrasteDoDia": {
+    "heading": "O contraste de hoje",
+    "tagline": "Categoria que cobra vs categoria que atende — uptime nas últimas 24h.",
+    "sideLabelArrecadacao": "Arrecadação",
+    "sideLabelAtendimento": "Atendimento",
+    "uptimeWindow": "Uptime 24h",
+    "gap": "Diferença: {value} pontos percentuais",
+    "ariaLabel": "{heading}: {bestName} ({bestCategory}) {bestPct}, {worstName} ({worstCategory}) {worstPct}, diferença de {gap} pontos percentuais."
+  },
   "EmQuedaAgora": {
     "heading": "Em queda agora",
     "summary": "{count, plural, one {# serviço com problemas neste momento} other {# serviços com problemas neste momento}}",

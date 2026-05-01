@@ -24,6 +24,7 @@ function svc(over: Partial<ServiceCardRow> & { slug: string }): ServiceCardRow {
   };
   return {
     ...base,
+    uptime24hPct: "uptime24hPct" in over ? (over.uptime24hPct as number | null) : null,
     uptime7dPct: "uptime7dPct" in over ? (over.uptime7dPct as number | null) : null,
     lastIncidentAt: "lastIncidentAt" in over ? (over.lastIncidentAt as Date | null) : null,
   };
