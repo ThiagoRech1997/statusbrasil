@@ -84,14 +84,15 @@ describe("ServicesResponse", () => {
       status: "operational" as const,
       uptime1h: 99.5,
     };
-    expect(ServicesResponse.parse({ items: [item], nextCursor: "abc" })).toEqual({
-      items: [item],
-      nextCursor: "abc",
+    expect(ServicesResponse.parse({ data: [item], next_cursor: "abc" })).toEqual({
+      data: [item],
+      next_cursor: "abc",
     });
   });
 
-  it("accepts nextCursor=null", () => {
-    expect(ServicesResponse.parse({ items: [], nextCursor: null }).nextCursor).toBeNull();
+  it("omits next_cursor when there is no further page", () => {
+    const parsed = ServicesResponse.parse({ data: [] });
+    expect(parsed.next_cursor).toBeUndefined();
   });
 
   it("rejects an item with an invalid sphere", () => {
@@ -249,8 +250,10 @@ describe("ServiceDetailResponse + IncidentItem + IncidentsResponse", () => {
     expect(() => IncidentItem.parse({ ...incident, id: "not-a-uuid" })).toThrow();
   });
 
-  it("validates IncidentsResponse with paginated cursor=null", () => {
-    expect(IncidentsResponse.parse({ items: [incident], nextCursor: null }).nextCursor).toBeNull();
+  it("validates IncidentsResponse and omits next_cursor on the last page", () => {
+    const parsed = IncidentsResponse.parse({ data: [incident] });
+    expect(parsed.data).toHaveLength(1);
+    expect(parsed.next_cursor).toBeUndefined();
   });
 });
 

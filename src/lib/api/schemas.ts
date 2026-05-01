@@ -58,7 +58,7 @@ export const ServiceItem = z.object({
 });
 export type ServiceItem = z.infer<typeof ServiceItem>;
 
-const ServicesSort = z.enum(["name", "category", "status"]).default("name");
+const ServicesSort = z.enum(["uptime", "name", "category", "status"]).default("name");
 export type ServicesSort = z.infer<typeof ServicesSort>;
 
 export const ServicesQueryParams = z.object({
@@ -71,8 +71,8 @@ export const ServicesQueryParams = z.object({
 export type ServicesQueryParams = z.infer<typeof ServicesQueryParams>;
 
 export const ServicesResponse = z.object({
-  items: z.array(ServiceItem),
-  nextCursor: z.string().nullable(),
+  data: z.array(ServiceItem),
+  next_cursor: z.string().optional(),
 });
 export type ServicesResponse = z.infer<typeof ServicesResponse>;
 
@@ -135,8 +135,8 @@ export const IncidentsQueryParams = z.object({
 export type IncidentsQueryParams = z.infer<typeof IncidentsQueryParams>;
 
 export const IncidentsResponse = z.object({
-  items: z.array(IncidentItem),
-  nextCursor: z.string().nullable(),
+  data: z.array(IncidentItem),
+  next_cursor: z.string().optional(),
 });
 export type IncidentsResponse = z.infer<typeof IncidentsResponse>;
 
