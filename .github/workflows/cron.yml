@@ -1,0 +1,66 @@
+name: Cron — hourly aggregate
+
+on:
+  schedule:
+    # 5 minutes past every hour, giving the previous hour time to settle
+    # in Gatus before we aggregate it. See docs/adr/0009-cron-strategy.md
+    # for the trade-off vs. an in-process node-cron and the systemd Plan B.
+    - cron: "5 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cron-aggregate
+  cancel-in-progress: false
+
+jobs:
+  aggregate:
+    name: POST /api/cron/aggregate
+    # GitHub Actions only runs scheduled workflows from the default branch,
+    # but pin the job to main as defense-in-depth against fork dispatch.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Hit aggregate endpoint
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          PROD_URL: ${{ vars.PROD_URL }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${PROD_URL:-}" ]; then
+            echo "::error::vars.PROD_URL is not set"
+            exit 1
+          fi
+          if [ -z "${CRON_SECRET:-}" ]; then
+            echo "::error::secrets.CRON_SECRET is not set"
+            exit 1
+          fi
+
+          response=$(mktemp)
+          status=$(curl \
+            --silent \
+            --show-error \
+            --max-time 120 \
+            --retry 2 \
+            --retry-delay 10 \
+            --retry-connrefused \
+            --output "$response" \
+            --write-out "%{http_code}" \
+            -X POST \
+            -H "X-Cron-Secret: ${CRON_SECRET}" \
+            "${PROD_URL}/api/cron/aggregate")
+
+          echo "HTTP ${status}"
+          echo "--- response body ---"
+          cat "$response"
+          echo
+          echo "--- end response ---"
+
+          if [ "$status" != "200" ]; then
+            echo "::error::aggregate endpoint returned HTTP ${status}"
+            exit 1
+          fi

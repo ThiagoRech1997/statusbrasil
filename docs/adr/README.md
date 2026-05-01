@@ -41,4 +41,4 @@ What becomes easier, what becomes harder, what we are now committed to, and what
 - [ADR-0006 — License the project under AGPL-3.0](0006-agpl-3-0.md)
 - [ADR-0007 — Biome instead of ESLint + Prettier](0007-biome-over-eslint-prettier.md)
 - [ADR-0008 — visx instead of Recharts](0008-visx-over-recharts.md)
-- ADR-0009 — cron strategy for Gatus → Postgres aggregates *(reserved, see milestone M1.7)*
+- [ADR-0009 — Cron strategy for Gatus → Postgres aggregates](0009-cron-strategy.md)
