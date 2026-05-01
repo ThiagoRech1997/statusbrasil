@@ -29,6 +29,7 @@
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^8.5.0",
     "@base-ui/react": "^1.4.1",
+    "@scalar/api-reference-react": "^0.9.32",
     "@sentry/nextjs": "^10.51.0",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.37.0",
