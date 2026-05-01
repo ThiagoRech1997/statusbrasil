@@ -49,6 +49,15 @@
     "documentos": "Documentos",
     "justica": "Justiça"
   },
+  "EmQuedaAgora": {
+    "heading": "Em queda agora",
+    "summary": "{count, plural, one {# serviço com problemas neste momento} other {# serviços com problemas neste momento}}",
+    "summaryAria": "Alerta: {count, plural, one {# serviço com problemas} other {# serviços com problemas}}",
+    "noLastUpdate": "sem timestamp de atualização",
+    "lastUpdate": "atualizado {time}",
+    "itemAriaWithTime": "{name} ({agency}): {status}, atualizado {time}.",
+    "itemAriaNoTime": "{name} ({agency}): {status}."
+  },
   "ServiceStatusCard": {
     "status": {
       "operational": "Operacional",

@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { EmQuedaAgora } from "@/components/em-queda-agora";
 import { ServiceStatusCard } from "@/components/service-status-card";
 import { db } from "@/lib/db";
 import { getHomeDashboard, type HomeCategoryGroup } from "@/lib/queries/services";
@@ -31,15 +32,18 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
           {tHome("empty")}
         </p>
       ) : (
-        <nav aria-label={tHome("servicesNavLabel")} className="flex flex-col gap-10">
-          {groups.map((group) => (
-            <CategorySection
-              key={group.category}
-              group={group}
-              categoryLabel={categoryLabel(tCategories, group.category)}
-            />
-          ))}
-        </nav>
+        <>
+          <EmQuedaAgora groups={groups} />
+          <nav aria-label={tHome("servicesNavLabel")} className="flex flex-col gap-10">
+            {groups.map((group) => (
+              <CategorySection
+                key={group.category}
+                group={group}
+                categoryLabel={categoryLabel(tCategories, group.category)}
+              />
+            ))}
+          </nav>
+        </>
       )}
     </div>
   );
