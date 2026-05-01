@@ -87,7 +87,7 @@ describe("GET /api/v1/services", () => {
     expect(body.data[0]).toMatchObject({
       slug: "a",
       status: "operational",
-      uptime1h: 100,
+      uptime_1h: 100,
     });
   });
 

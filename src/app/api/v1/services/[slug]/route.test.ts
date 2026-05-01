@@ -99,7 +99,7 @@ describe("GET /api/v1/services/[slug]", () => {
     expect(body.service).toMatchObject({
       slug: "gov-br",
       status: "operational",
-      uptime1h: 99.9,
+      uptime_1h: 99.9,
     });
     expect(body.service).not.toHaveProperty("createdAt");
     expect(body.service).not.toHaveProperty("active");
@@ -107,9 +107,9 @@ describe("GET /api/v1/services/[slug]", () => {
     expect(body.mttr_30d_seconds).toBe(1200);
     expect(body.last_incident).toMatchObject({
       id: baseIncident.id,
-      serviceSlug: "gov-br",
-      startedAt: "2026-04-30T08:00:00.000Z",
-      endedAt: "2026-04-30T08:30:00.000Z",
+      service_slug: "gov-br",
+      started_at: "2026-04-30T08:00:00.000Z",
+      ended_at: "2026-04-30T08:30:00.000Z",
     });
   });
 

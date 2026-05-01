@@ -1,14 +1,20 @@
 import { NextResponse } from "next/server";
 import type { ApiErrorResponse } from "./schemas";
 
-export const PUBLIC_CACHE_HEADER = "s-maxage=60, stale-while-revalidate=300";
+export const PUBLIC_CACHE_HEADER_60 = "s-maxage=60, stale-while-revalidate=300";
+export const PUBLIC_CACHE_HEADER_300 = "s-maxage=300, stale-while-revalidate=600";
 
-export function publicJson<T>(body: T, init: { status?: number } = {}): Response {
+export interface PublicJsonInit {
+  status?: number;
+  cacheControl?: string;
+}
+
+export function publicJson<T>(body: T, init: PublicJsonInit = {}): Response {
   return new Response(JSON.stringify(body), {
     status: init.status ?? 200,
     headers: {
       "content-type": "application/json; charset=utf-8",
-      "cache-control": PUBLIC_CACHE_HEADER,
+      "cache-control": init.cacheControl ?? PUBLIC_CACHE_HEADER_60,
     },
   });
 }

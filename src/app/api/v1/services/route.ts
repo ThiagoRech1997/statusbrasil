@@ -1,9 +1,9 @@
 import type { z } from "zod";
 import { decodeCursor, encodeCursor, InvalidCursorError } from "@/lib/api/cursor";
+import { toServiceItem } from "@/lib/api/mappers";
 import { apiError, publicJson, zodValidationError } from "@/lib/api/responses";
 import {
   parseSearchParams,
-  type ServiceItem,
   ServicesQueryParams,
   type ServicesResponse,
   type ServicesSort,
@@ -92,20 +92,6 @@ function comparator(sort: ServicesSort): (a: ServiceWithStatus, b: ServiceWithSt
 
 function byString(a: string, b: string): number {
   return a.localeCompare(b);
-}
-
-function toServiceItem(s: ServiceWithStatus): ServiceItem {
-  return {
-    slug: s.slug,
-    name: s.name,
-    agency: s.agency,
-    category: s.category,
-    sphere: s.sphere,
-    url: s.url,
-    description: s.description,
-    status: s.status,
-    uptime1h: s.uptime1h,
-  };
 }
 
 export const GET = withHttpMetrics(handler, ROUTE);

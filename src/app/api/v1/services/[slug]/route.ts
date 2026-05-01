@@ -1,15 +1,10 @@
+import { toIncidentItem, toServiceItem } from "@/lib/api/mappers";
 import { apiError, publicJson, zodValidationError } from "@/lib/api/responses";
-import {
-  type IncidentItem,
-  type ServiceDetailResponse,
-  type ServiceItem,
-  Slug,
-} from "@/lib/api/schemas";
+import { type ServiceDetailResponse, Slug } from "@/lib/api/schemas";
 import { db as defaultDb } from "@/lib/db";
 import { withHttpMetrics } from "@/lib/metrics";
-import type { IncidentRow } from "@/lib/queries/incidents";
 import { getRecentByService } from "@/lib/queries/incidents";
-import { getServiceWithStatusBySlug, type ServiceWithStatus } from "@/lib/queries/services";
+import { getServiceWithStatusBySlug } from "@/lib/queries/services";
 import { getRolling30dSummary } from "@/lib/queries/uptime";
 
 export const runtime = "nodejs";
@@ -47,33 +42,6 @@ async function handler(
   };
 
   return publicJson(body);
-}
-
-function toServiceItem(s: ServiceWithStatus): ServiceItem {
-  return {
-    slug: s.slug,
-    name: s.name,
-    agency: s.agency,
-    category: s.category,
-    sphere: s.sphere,
-    url: s.url,
-    description: s.description,
-    status: s.status,
-    uptime1h: s.uptime1h,
-  };
-}
-
-function toIncidentItem(row: IncidentRow): IncidentItem {
-  return {
-    id: row.id,
-    serviceSlug: row.serviceSlug,
-    startedAt: row.startedAt.toISOString(),
-    endedAt: row.endedAt ? row.endedAt.toISOString() : null,
-    durationSeconds: row.durationSeconds,
-    statusCode: row.statusCode,
-    errorMessage: row.errorMessage,
-    severity: row.severity,
-  };
 }
 
 export const GET = withHttpMetrics(handler, ROUTE);

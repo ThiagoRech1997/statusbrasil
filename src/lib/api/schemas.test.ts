@@ -82,7 +82,7 @@ describe("ServicesResponse", () => {
       url: "https://www.gov.br/",
       description: null,
       status: "operational" as const,
-      uptime1h: 99.5,
+      uptime_1h: 99.5,
     };
     expect(ServicesResponse.parse({ data: [item], next_cursor: "abc" })).toEqual({
       data: [item],
@@ -106,22 +106,27 @@ describe("ServicesResponse", () => {
         url: "https://x.test/",
         description: null,
         status: "operational",
-        uptime1h: null,
+        uptime_1h: null,
       }),
     ).toThrow();
   });
 });
 
 describe("HistoryQueryParams", () => {
-  it("requires both from and to as ISO strings with offset", () => {
+  it("treats from and to as optional (handler applies defaults)", () => {
+    expect(HistoryQueryParams.parse({})).toEqual({});
+    expect(HistoryQueryParams.parse({ from: "2026-04-30T00:00:00Z" })).toEqual({
+      from: "2026-04-30T00:00:00Z",
+    });
+  });
+
+  it("rejects malformed ISO strings", () => {
     expect(() =>
       HistoryQueryParams.parse({ from: "not-a-date", to: "2026-04-30T00:00:00Z" }),
     ).toThrow();
-    expect(() => HistoryQueryParams.parse({ from: "2026-04-30T00:00:00Z" })).toThrow();
-    expect(() => HistoryQueryParams.parse({ to: "2026-04-30T00:00:00Z" })).toThrow();
   });
 
-  it("rejects an inverted range", () => {
+  it("rejects an inverted range when both are present", () => {
     const result = HistoryQueryParams.safeParse({
       from: "2026-04-30T10:00:00Z",
       to: "2026-04-30T08:00:00Z",
@@ -149,17 +154,17 @@ describe("HistoryResponse", () => {
       points: [
         {
           hour: "2026-04-30T08:00:00Z",
-          uptimePct: 99.5,
-          avgLatencyMs: 200,
-          totalChecks: 60,
-          failedChecks: 0,
+          uptime_pct: 99.5,
+          avg_latency_ms: 200,
+          total_checks: 60,
+          failed_checks: 0,
         },
       ],
     };
     expect(HistoryResponse.parse(value)).toEqual(value);
   });
 
-  it("rejects uptimePct outside [0,100]", () => {
+  it("rejects uptime_pct outside [0,100]", () => {
     expect(() =>
       HistoryResponse.parse({
         slug: "x",
@@ -167,10 +172,10 @@ describe("HistoryResponse", () => {
         points: [
           {
             hour: "2026-04-30T08:00:00Z",
-            uptimePct: 101,
-            avgLatencyMs: 0,
-            totalChecks: 0,
-            failedChecks: 0,
+            uptime_pct: 101,
+            avg_latency_ms: 0,
+            total_checks: 0,
+            failed_checks: 0,
           },
         ],
       }),
@@ -216,12 +221,12 @@ describe("IncidentsQueryParams", () => {
 describe("ServiceDetailResponse + IncidentItem + IncidentsResponse", () => {
   const incident = {
     id: "550e8400-e29b-41d4-a716-446655440000",
-    serviceSlug: "gov-br",
-    startedAt: "2026-04-30T08:00:00Z",
-    endedAt: "2026-04-30T08:30:00Z",
-    durationSeconds: 1800,
-    statusCode: 503,
-    errorMessage: "boom",
+    service_slug: "gov-br",
+    started_at: "2026-04-30T08:00:00Z",
+    ended_at: "2026-04-30T08:30:00Z",
+    duration_seconds: 1800,
+    status_code: 503,
+    error_message: "boom",
     severity: "partial" as const,
   };
 
@@ -236,7 +241,7 @@ describe("ServiceDetailResponse + IncidentItem + IncidentsResponse", () => {
         url: "https://www.gov.br/",
         description: null,
         status: "operational",
-        uptime1h: 100,
+        uptime_1h: 100,
       },
       uptime_pct_30d: 99.95,
       mttr_30d_seconds: 1200,
@@ -258,7 +263,7 @@ describe("ServiceDetailResponse + IncidentItem + IncidentsResponse", () => {
         url: "https://x.test/",
         description: null,
         status: "unknown",
-        uptime1h: null,
+        uptime_1h: null,
       },
       uptime_pct_30d: null,
       mttr_30d_seconds: null,

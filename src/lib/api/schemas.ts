@@ -54,7 +54,7 @@ export const ServiceItem = z.object({
   url: z.string().url(),
   description: z.string().nullable(),
   status: CurrentStatus,
-  uptime1h: z.number().min(0).max(100).nullable(),
+  uptime_1h: z.number().min(0).max(100).nullable(),
 });
 export type ServiceItem = z.infer<typeof ServiceItem>;
 
@@ -78,12 +78,12 @@ export type ServicesResponse = z.infer<typeof ServicesResponse>;
 
 export const IncidentItem = z.object({
   id: z.string().uuid(),
-  serviceSlug: Slug,
-  startedAt: IsoDateString,
-  endedAt: IsoDateString.nullable(),
-  durationSeconds: z.number().int().nonnegative().nullable(),
-  statusCode: z.number().int().nullable(),
-  errorMessage: z.string().nullable(),
+  service_slug: Slug,
+  started_at: IsoDateString,
+  ended_at: IsoDateString.nullable(),
+  duration_seconds: z.number().int().nonnegative().nullable(),
+  status_code: z.number().int().nullable(),
+  error_message: z.string().nullable(),
   severity: IncidentSeverity,
 });
 export type IncidentItem = z.infer<typeof IncidentItem>;
@@ -98,10 +98,10 @@ export type ServiceDetailResponse = z.infer<typeof ServiceDetailResponse>;
 
 export const HistoryQueryParams = z
   .object({
-    from: IsoDateString,
-    to: IsoDateString,
+    from: IsoDateString.optional(),
+    to: IsoDateString.optional(),
   })
-  .refine((v) => Date.parse(v.to) >= Date.parse(v.from), {
+  .refine((v) => !(v.from && v.to) || Date.parse(v.to) >= Date.parse(v.from), {
     message: "to must be greater than or equal to from",
     path: ["to"],
   });
@@ -109,10 +109,10 @@ export type HistoryQueryParams = z.infer<typeof HistoryQueryParams>;
 
 export const HourlyPoint = z.object({
   hour: IsoDateString,
-  uptimePct: z.number().min(0).max(100),
-  avgLatencyMs: z.number().int().nonnegative(),
-  totalChecks: z.number().int().nonnegative(),
-  failedChecks: z.number().int().nonnegative(),
+  uptime_pct: z.number().min(0).max(100),
+  avg_latency_ms: z.number().int().nonnegative(),
+  total_checks: z.number().int().nonnegative(),
+  failed_checks: z.number().int().nonnegative(),
 });
 export type HourlyPoint = z.infer<typeof HourlyPoint>;
 
