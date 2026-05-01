@@ -34,5 +34,26 @@
     },
     "license": "Código aberto sob licença AGPL-3.0",
     "tagline": "Portal público — dados oficiais, números crus, sem juízo de valor automatizado"
+  },
+  "ServiceStatusCard": {
+    "status": {
+      "operational": "Operacional",
+      "degraded": "Instável",
+      "down": "Fora do ar",
+      "unknown": "Indeterminado"
+    },
+    "ariaStatus": {
+      "operational": "operacional",
+      "degraded": "instável",
+      "down": "fora do ar",
+      "unknown": "estado indeterminado"
+    },
+    "uptimeLabel": "Uptime 7d",
+    "uptimeUnknown": "sem dados",
+    "lastIncidentLabel": "Último incidente",
+    "noRecentIncident": "sem incidentes recentes",
+    "ariaUptime": "uptime {value} nos últimos 7 dias",
+    "ariaUptimeUnavailable": "sem dados de uptime nos últimos 7 dias",
+    "ariaLastIncident": "último incidente {time}"
   }
 }

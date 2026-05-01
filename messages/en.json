@@ -34,5 +34,26 @@
     },
     "license": "Open source under AGPL-3.0",
     "tagline": "Public portal — official data, raw numbers, no automated value judgments"
+  },
+  "ServiceStatusCard": {
+    "status": {
+      "operational": "Operational",
+      "degraded": "Degraded",
+      "down": "Down",
+      "unknown": "Unknown"
+    },
+    "ariaStatus": {
+      "operational": "operational",
+      "degraded": "degraded",
+      "down": "down",
+      "unknown": "status unknown"
+    },
+    "uptimeLabel": "Uptime 7d",
+    "uptimeUnknown": "no data",
+    "lastIncidentLabel": "Last incident",
+    "noRecentIncident": "no recent incidents",
+    "ariaUptime": "uptime {value} over the last 7 days",
+    "ariaUptimeUnavailable": "no uptime data for the last 7 days",
+    "ariaLastIncident": "last incident {time}"
   }
 }
