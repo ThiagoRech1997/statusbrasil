@@ -1,6 +1,7 @@
-import type { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
 import { routing } from "@/i18n/routing";
+import { isCronExempt, rateLimitedResponse, rateLimitGate } from "@/lib/api/rate-limit-gate";
 
 const intlMiddleware = createMiddleware(routing);
 
@@ -70,7 +71,24 @@ function buildCsp(nonce: string): string {
   return directives.join("; ");
 }
 
-export default function middleware(request: NextRequest): NextResponse {
+function isRateLimitedApiPath(pathname: string): boolean {
+  return pathname.startsWith("/api/v1/") || pathname.startsWith("/api/cron/");
+}
+
+async function handleApiRequest(request: NextRequest): Promise<NextResponse> {
+  if (request.nextUrl.pathname.startsWith("/api/cron/") && isCronExempt(request)) {
+    return NextResponse.next();
+  }
+  const decision = await rateLimitGate(request);
+  if (decision.allowed) return NextResponse.next();
+  return rateLimitedResponse(decision.retryAfterSeconds);
+}
+
+export default async function middleware(request: NextRequest): Promise<NextResponse> {
+  if (isRateLimitedApiPath(request.nextUrl.pathname)) {
+    return handleApiRequest(request);
+  }
+
   const nonce = generateNonce();
   const csp = buildCsp(nonce);
 
@@ -84,5 +102,5 @@ export default function middleware(request: NextRequest): NextResponse {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
+  matcher: ["/((?!api|_next|_vercel|.*\\..*).*)", "/api/v1/:path*", "/api/cron/:path*"],
 };

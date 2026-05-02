@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { resolveHours, runAggregation } from "@/lib/aggregator";
 import { logger } from "@/lib/logger";
+import { incCronRun, withHttpMetrics } from "@/lib/metrics";
 import { getRateLimiter } from "@/lib/ratelimit";
 
 export const runtime = "nodejs";
@@ -8,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 const rateLimit = () => getRateLimiter("cron-aggregate", { requests: 6, window: "1 m" });
 
-export async function POST(req: Request): Promise<Response> {
+async function handler(req: Request): Promise<Response> {
   const expected = process.env.CRON_SECRET;
   const provided = req.headers.get("x-cron-secret");
 
@@ -41,6 +42,7 @@ export async function POST(req: Request): Promise<Response> {
 
   try {
     const summary = await runAggregation({ hours });
+    incCronRun("aggregate", "success");
     logger.info({ ...summary, hours }, "cron/aggregate: completed");
     return NextResponse.json({
       services_processed: summary.servicesProcessed,
@@ -50,6 +52,7 @@ export async function POST(req: Request): Promise<Response> {
       duration_ms: summary.durationMs,
     });
   } catch (err) {
+    incCronRun("aggregate", "fail");
     logger.error(
       { error: err instanceof Error ? err.message : String(err) },
       "cron/aggregate: failed",
@@ -57,3 +60,5 @@ export async function POST(req: Request): Promise<Response> {
     return NextResponse.json({ error: "aggregation failed" }, { status: 500 });
   }
 }
+
+export const POST = withHttpMetrics(handler, "/api/cron/aggregate");

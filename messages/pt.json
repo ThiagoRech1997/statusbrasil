@@ -34,5 +34,83 @@
     },
     "license": "Código aberto sob licença AGPL-3.0",
     "tagline": "Portal público — dados oficiais, números crus, sem juízo de valor automatizado"
+  },
+  "Home": {
+    "heading": "StatusBrasil",
+    "tagline": "Disponibilidade dos serviços do governo brasileiro",
+    "servicesNavLabel": "Serviços por categoria",
+    "empty": "Nenhum serviço cadastrado ainda."
+  },
+  "Categories": {
+    "atendimento": "Atendimento",
+    "arrecadacao": "Arrecadação",
+    "saude": "Saúde",
+    "trabalho": "Trabalho",
+    "documentos": "Documentos",
+    "justica": "Justiça"
+  },
+  "DowntimeTicker": {
+    "summaryNone": "Nenhuma indisponibilidade somada nas últimas 24h.",
+    "summary": "Hoje, {duration} de indisponibilidade somada nos serviços monitorados.",
+    "worstService": "{name} responde por {duration}.",
+    "ariaLabel": "Indisponibilidade acumulada nas últimas 24h: {summary}"
+  },
+  "ContrasteDoDia": {
+    "heading": "O contraste de hoje",
+    "tagline": "Categoria que cobra vs categoria que atende — uptime nas últimas 24h.",
+    "sideLabelArrecadacao": "Arrecadação",
+    "sideLabelAtendimento": "Atendimento",
+    "uptimeWindow": "Uptime 24h",
+    "gap": "Diferença: {value} pontos percentuais",
+    "ariaLabel": "{heading}: {bestName} ({bestCategory}) {bestPct}, {worstName} ({worstCategory}) {worstPct}, diferença de {gap} pontos percentuais."
+  },
+  "EmQuedaAgora": {
+    "heading": "Em queda agora",
+    "summary": "{count, plural, one {# serviço com problemas neste momento} other {# serviços com problemas neste momento}}",
+    "summaryAria": "Alerta: {count, plural, one {# serviço com problemas} other {# serviços com problemas}}",
+    "noLastUpdate": "sem timestamp de atualização",
+    "lastUpdate": "atualizado {time}",
+    "itemAriaWithTime": "{name} ({agency}): {status}, atualizado {time}.",
+    "itemAriaNoTime": "{name} ({agency}): {status}."
+  },
+  "OgImage": {
+    "brand": "StatusBrasil",
+    "tagline": "Disponibilidade dos serviços do governo brasileiro",
+    "downLabel": "{count, plural, one {serviço fora do ar agora} other {serviços fora do ar agora}}",
+    "downtimeWithTotal": "{duration} de indisponibilidade somada hoje",
+    "downtimeNone": "Nenhuma indisponibilidade somada hoje"
+  },
+  "ServiceDetail": {
+    "metaTitle": "{name} — StatusBrasil",
+    "metaDescription": "Disponibilidade do serviço {name} mantido por {agency}. StatusBrasil acompanha uptime, latência e incidentes em tempo real.",
+    "agencyLabel": "Mantido por",
+    "sphereLabel": "Esfera",
+    "sphere": {
+      "federal": "Federal",
+      "estadual": "Estadual",
+      "municipal": "Municipal"
+    },
+    "officialLink": "Acessar site oficial"
+  },
+  "ServiceStatusCard": {
+    "status": {
+      "operational": "Operacional",
+      "degraded": "Instável",
+      "down": "Fora do ar",
+      "unknown": "Indeterminado"
+    },
+    "ariaStatus": {
+      "operational": "operacional",
+      "degraded": "instável",
+      "down": "fora do ar",
+      "unknown": "estado indeterminado"
+    },
+    "uptimeLabel": "Uptime 7d",
+    "uptimeUnknown": "sem dados",
+    "lastIncidentLabel": "Último incidente",
+    "noRecentIncident": "sem incidentes recentes",
+    "ariaUptime": "uptime {value} nos últimos 7 dias",
+    "ariaUptimeUnavailable": "sem dados de uptime nos últimos 7 dias",
+    "ariaLastIncident": "último incidente {time}"
   }
 }

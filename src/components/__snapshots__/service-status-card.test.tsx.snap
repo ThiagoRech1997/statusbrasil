@@ -1,0 +1,75 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ServiceStatusCard > matches the visual snapshot for the operational state 1`] = `
+<a
+  aria-label="Receita Federal: operacional, uptime 99,2% nos últimos 7 dias. último incidente há 2 horas."
+  class="group/service-card flex flex-col gap-3 overflow-hidden rounded-xl bg-card p-4 text-sm text-card-foreground ring-1 ring-foreground/10 transition-colors hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+  data-slot="service-status-card"
+  data-status="operational"
+  href="/servico/receita-federal"
+>
+  <div
+    class="flex items-start justify-between gap-3"
+  >
+    <div
+      class="flex min-w-0 flex-col gap-0.5"
+    >
+      <span
+        class="truncate font-heading text-base font-medium leading-snug"
+      >
+        Receita Federal
+      </span>
+      <span
+        class="truncate text-xs text-muted-foreground"
+      >
+        Ministério da Fazenda
+      </span>
+    </div>
+    <span
+      aria-hidden="true"
+      class="inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium bg-operational text-operational-foreground"
+      data-slot="status-pill"
+      data-status="operational"
+    >
+      <span
+        aria-hidden="true"
+        class="size-1.5 rounded-full bg-current"
+      />
+      Operacional
+    </span>
+  </div>
+  <div
+    aria-hidden="true"
+    class="flex flex-col gap-1 text-xs"
+  >
+    <div
+      class="flex items-baseline justify-between gap-2"
+    >
+      <span
+        class="text-muted-foreground"
+      >
+        Uptime 7d
+      </span>
+      <span
+        class="font-medium tabular-nums"
+      >
+        99,2%
+      </span>
+    </div>
+    <div
+      class="flex items-baseline justify-between gap-2"
+    >
+      <span
+        class="text-muted-foreground"
+      >
+        Último incidente
+      </span>
+      <span
+        class="font-medium"
+      >
+        há 2 horas
+      </span>
+    </div>
+  </div>
+</a>
+`;

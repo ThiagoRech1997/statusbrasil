@@ -34,5 +34,83 @@
     },
     "license": "Open source under AGPL-3.0",
     "tagline": "Public portal — official data, raw numbers, no automated value judgments"
+  },
+  "Home": {
+    "heading": "StatusBrasil",
+    "tagline": "Brazilian government services availability tracker",
+    "servicesNavLabel": "Services by category",
+    "empty": "No services tracked yet."
+  },
+  "Categories": {
+    "atendimento": "Public services",
+    "arrecadacao": "Tax & revenue",
+    "saude": "Health",
+    "trabalho": "Labor",
+    "documentos": "Documents",
+    "justica": "Justice"
+  },
+  "DowntimeTicker": {
+    "summaryNone": "No accumulated downtime in the last 24h.",
+    "summary": "Today, {duration} of accumulated downtime across the monitored services.",
+    "worstService": "{name} accounts for {duration}.",
+    "ariaLabel": "Accumulated downtime over the last 24h: {summary}"
+  },
+  "ContrasteDoDia": {
+    "heading": "Today's contrast",
+    "tagline": "The category that collects vs the category that serves — uptime over the last 24h.",
+    "sideLabelArrecadacao": "Tax & revenue",
+    "sideLabelAtendimento": "Public services",
+    "uptimeWindow": "Uptime 24h",
+    "gap": "Difference: {value} percentage points",
+    "ariaLabel": "{heading}: {bestName} ({bestCategory}) {bestPct}, {worstName} ({worstCategory}) {worstPct}, gap of {gap} percentage points."
+  },
+  "EmQuedaAgora": {
+    "heading": "Currently down",
+    "summary": "{count, plural, one {# service is having issues right now} other {# services are having issues right now}}",
+    "summaryAria": "Alert: {count, plural, one {# service is having issues} other {# services are having issues}}",
+    "noLastUpdate": "no update timestamp",
+    "lastUpdate": "updated {time}",
+    "itemAriaWithTime": "{name} ({agency}): {status}, updated {time}.",
+    "itemAriaNoTime": "{name} ({agency}): {status}."
+  },
+  "OgImage": {
+    "brand": "StatusBrasil",
+    "tagline": "Brazilian government services availability tracker",
+    "downLabel": "{count, plural, one {service down right now} other {services down right now}}",
+    "downtimeWithTotal": "{duration} of accumulated downtime today",
+    "downtimeNone": "No accumulated downtime today"
+  },
+  "ServiceDetail": {
+    "metaTitle": "{name} — StatusBrasil",
+    "metaDescription": "Availability of {name} maintained by {agency}. StatusBrasil tracks uptime, latency and incidents in real time.",
+    "agencyLabel": "Maintained by",
+    "sphereLabel": "Sphere",
+    "sphere": {
+      "federal": "Federal",
+      "estadual": "State",
+      "municipal": "Municipal"
+    },
+    "officialLink": "Open official site"
+  },
+  "ServiceStatusCard": {
+    "status": {
+      "operational": "Operational",
+      "degraded": "Degraded",
+      "down": "Down",
+      "unknown": "Unknown"
+    },
+    "ariaStatus": {
+      "operational": "operational",
+      "degraded": "degraded",
+      "down": "down",
+      "unknown": "status unknown"
+    },
+    "uptimeLabel": "Uptime 7d",
+    "uptimeUnknown": "no data",
+    "lastIncidentLabel": "Last incident",
+    "noRecentIncident": "no recent incidents",
+    "ariaUptime": "uptime {value} over the last 7 days",
+    "ariaUptimeUnavailable": "no uptime data for the last 7 days",
+    "ariaLastIncident": "last incident {time}"
   }
 }

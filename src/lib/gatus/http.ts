@@ -2,6 +2,7 @@ import "server-only";
 
 import type { z } from "zod";
 import { logger } from "@/lib/logger";
+import { type GatusOutcome, incGatusRequest } from "@/lib/metrics";
 import type { GatusClient } from "./client";
 import { EndpointStatusesSchema } from "./schemas";
 
@@ -54,28 +55,34 @@ export function createHttpGatusClient(options: CreateHttpGatusClientOptions): Ga
     };
     if (token) headers.Authorization = `Bearer ${token}`;
 
-    let lastError: unknown;
-    for (let attempt = 1; attempt <= retryAttempts; attempt++) {
-      try {
-        const res = await fetchImpl(url, { headers });
-        if (!res.ok) {
-          throw new GatusResponseError(`Gatus ${res.status} on ${path}`, res.status);
+    let outcome: GatusOutcome = "error";
+    try {
+      let lastError: unknown;
+      for (let attempt = 1; attempt <= retryAttempts; attempt++) {
+        try {
+          const res = await fetchImpl(url, { headers });
+          if (!res.ok) {
+            throw new GatusResponseError(`Gatus ${res.status} on ${path}`, res.status);
+          }
+          const json = await res.json();
+          const parsed = schema.safeParse(json);
+          if (!parsed.success) {
+            throw new GatusValidationError(path, parsed.error.issues);
+          }
+          outcome = "success";
+          return parsed.data;
+        } catch (err) {
+          lastError = err;
+          if (!isRetriable(err) || attempt === retryAttempts) throw err;
+          const delay = retryBaseMs * 2 ** (attempt - 1);
+          logger.warn({ attempt, delay, error: errorMessage(err), path }, "gatus http retry");
+          await sleep(delay);
         }
-        const json = await res.json();
-        const parsed = schema.safeParse(json);
-        if (!parsed.success) {
-          throw new GatusValidationError(path, parsed.error.issues);
-        }
-        return parsed.data;
-      } catch (err) {
-        lastError = err;
-        if (!isRetriable(err) || attempt === retryAttempts) throw err;
-        const delay = retryBaseMs * 2 ** (attempt - 1);
-        logger.warn({ attempt, delay, error: errorMessage(err), path }, "gatus http retry");
-        await sleep(delay);
       }
+      throw lastError;
+    } finally {
+      incGatusRequest(path, outcome);
     }
-    throw lastError;
   }
 
   return {
