@@ -101,6 +101,40 @@
     "ariaUptimeUnavailable": "sem dados de uptime nos últimos 7 dias",
     "ariaLastIncident": "último incidente {time}"
   },
+  "IncidentsTable": {
+    "ariaLabel": "Incidentes",
+    "columns": {
+      "startedAt": "Início",
+      "duration": "Duração",
+      "statusCode": "Código",
+      "severity": "Severidade",
+      "message": "Mensagem"
+    },
+    "sort": {
+      "ascendingNow": "ordenado por {column}, do menor pro maior. Clique para inverter.",
+      "descendingNow": "ordenado por {column}, do maior pro menor. Clique para inverter.",
+      "sortBy": "ordenar por {column}"
+    },
+    "severityLabel": {
+      "partial": "Parcial",
+      "total": "Total"
+    },
+    "ongoing": "em andamento",
+    "missing": "—",
+    "expandMessage": "ver mensagem completa",
+    "collapseMessage": "recolher mensagem",
+    "viewIncident": "Ver detalhes do incidente {id}",
+    "viewIncidentText": "Ver detalhes",
+    "rowAriaLabel": "Incidente em {service} iniciado em {start}, severidade {severity}",
+    "empty": "Nenhum incidente nos últimos 90 dias.",
+    "pagination": {
+      "navAriaLabel": "Paginação dos incidentes",
+      "summary": "Página {page} de {total}",
+      "previous": "Anterior",
+      "next": "Próxima",
+      "rangeAria": "Mostrando {from} a {to} de {total} incidentes"
+    }
+  },
   "LatencyChart": {
     "ariaLabel": "Latência de {service} ({window})",
     "windowGroupLabel": "Janela de tempo",

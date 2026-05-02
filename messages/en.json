@@ -101,6 +101,40 @@
     "ariaUptimeUnavailable": "no uptime data for the last 7 days",
     "ariaLastIncident": "last incident {time}"
   },
+  "IncidentsTable": {
+    "ariaLabel": "Incidents",
+    "columns": {
+      "startedAt": "Started",
+      "duration": "Duration",
+      "statusCode": "Code",
+      "severity": "Severity",
+      "message": "Message"
+    },
+    "sort": {
+      "ascendingNow": "sorted by {column}, ascending. Click to reverse.",
+      "descendingNow": "sorted by {column}, descending. Click to reverse.",
+      "sortBy": "sort by {column}"
+    },
+    "severityLabel": {
+      "partial": "Partial",
+      "total": "Total"
+    },
+    "ongoing": "ongoing",
+    "missing": "—",
+    "expandMessage": "show full message",
+    "collapseMessage": "collapse message",
+    "viewIncident": "View incident {id}",
+    "viewIncidentText": "View details",
+    "rowAriaLabel": "Incident on {service} started at {start}, severity {severity}",
+    "empty": "No incidents in the last 90 days.",
+    "pagination": {
+      "navAriaLabel": "Incidents pagination",
+      "summary": "Page {page} of {total}",
+      "previous": "Previous",
+      "next": "Next",
+      "rangeAria": "Showing {from}–{to} of {total} incidents"
+    }
+  },
   "LatencyChart": {
     "ariaLabel": "Latency for {service} ({window})",
     "windowGroupLabel": "Time window",
