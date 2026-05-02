@@ -101,6 +101,36 @@
     "ariaUptimeUnavailable": "sem dados de uptime nos últimos 7 dias",
     "ariaLastIncident": "último incidente {time}"
   },
+  "LatencyChart": {
+    "ariaLabel": "Latência de {service} ({window})",
+    "windowGroupLabel": "Janela de tempo",
+    "window": {
+      "1d": "24h",
+      "7d": "7 dias",
+      "30d": "30 dias",
+      "90d": "90 dias"
+    },
+    "windowAria": {
+      "1d": "Últimas 24 horas",
+      "7d": "Últimos 7 dias",
+      "30d": "Últimos 30 dias",
+      "90d": "Últimos 90 dias"
+    },
+    "axisYLabel": "ms",
+    "legendP50": "p50 (mediana)",
+    "legendP95": "p95",
+    "tooltipP50": "p50: {value}",
+    "tooltipP95": "p95: {value}",
+    "tooltipNoData": "sem dados",
+    "valueMs": "{value} ms",
+    "tableCaption": "Tabela de latência por amostra",
+    "tableHeaderTimestamp": "Horário",
+    "tableHeaderP50": "p50 (ms)",
+    "tableHeaderP95": "p95 (ms)",
+    "tableUnknown": "—",
+    "empty": "Sem amostras de latência nesta janela.",
+    "instructions": "Use as setas para percorrer as amostras."
+  },
   "UptimeBars": {
     "ariaLabel": "Uptime diário de {service} nos últimos {count} dias",
     "ariaBar": "{date}: {uptime} de uptime, {count, plural, =0 {sem incidentes} one {# incidente} other {# incidentes}}",
