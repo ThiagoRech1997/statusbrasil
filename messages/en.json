@@ -73,6 +73,13 @@
     "itemAriaWithTime": "{name} ({agency}): {status}, updated {time}.",
     "itemAriaNoTime": "{name} ({agency}): {status}."
   },
+  "OgImage": {
+    "brand": "StatusBrasil",
+    "tagline": "Brazilian government services availability tracker",
+    "downLabel": "{count, plural, one {service down right now} other {services down right now}}",
+    "downtimeWithTotal": "{duration} of accumulated downtime today",
+    "downtimeNone": "No accumulated downtime today"
+  },
   "ServiceStatusCard": {
     "status": {
       "operational": "Operational",

@@ -73,6 +73,13 @@
     "itemAriaWithTime": "{name} ({agency}): {status}, atualizado {time}.",
     "itemAriaNoTime": "{name} ({agency}): {status}."
   },
+  "OgImage": {
+    "brand": "StatusBrasil",
+    "tagline": "Disponibilidade dos serviços do governo brasileiro",
+    "downLabel": "{count, plural, one {serviço fora do ar agora} other {serviços fora do ar agora}}",
+    "downtimeWithTotal": "{duration} de indisponibilidade somada hoje",
+    "downtimeNone": "Nenhuma indisponibilidade somada hoje"
+  },
   "ServiceStatusCard": {
     "status": {
       "operational": "Operacional",
