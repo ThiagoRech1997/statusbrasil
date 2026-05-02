@@ -100,5 +100,19 @@
     "ariaUptime": "uptime {value} nos últimos 7 dias",
     "ariaUptimeUnavailable": "sem dados de uptime nos últimos 7 dias",
     "ariaLastIncident": "último incidente {time}"
+  },
+  "UptimeBars": {
+    "ariaLabel": "Uptime diário de {service} nos últimos {count} dias",
+    "ariaBar": "{date}: {uptime} de uptime, {count, plural, =0 {sem incidentes} one {# incidente} other {# incidentes}}",
+    "ariaBarUnknown": "{date}: sem dados de uptime",
+    "tooltipUptime": "Uptime: {value}",
+    "tooltipUptimeUnknown": "Uptime: sem dados",
+    "tooltipIncidents": "{count, plural, =0 {Sem incidentes} one {# incidente} other {# incidentes}}",
+    "tableCaption": "Tabela de uptime diário",
+    "tableHeaderDate": "Dia",
+    "tableHeaderUptime": "Uptime",
+    "tableHeaderIncidents": "Incidentes",
+    "tableUnknown": "sem dados",
+    "empty": "Sem dados para exibir."
   }
 }
