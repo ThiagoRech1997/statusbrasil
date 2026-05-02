@@ -101,6 +101,28 @@
     "ariaUptimeUnavailable": "sem dados de uptime nos últimos 7 dias",
     "ariaLastIncident": "último incidente {time}"
   },
+  "SLABox": {
+    "heading": "SLA",
+    "targetLabel": "Meta",
+    "targetMissing": "Sem meta definida",
+    "periods": {
+      "currentMonth": "Mês atual",
+      "previousMonth": "Mês anterior",
+      "yearToDate": "Acumulado {year}"
+    },
+    "deltaAbove": "+{value} p.p. acima da meta",
+    "deltaBelow": "{value} p.p. abaixo da meta",
+    "deltaMet": "no alvo",
+    "actualUnknown": "sem dados",
+    "rowAria": "{period} ({rangeLabel}): {value}, {comparison}",
+    "rowAriaUnknown": "{period} ({rangeLabel}): sem dados",
+    "comparisonAbove": "acima da meta de {target}",
+    "comparisonBelow": "abaixo da meta de {target}",
+    "comparisonNoTarget": "sem meta para comparar",
+    "formulaToggle": "Como calculamos",
+    "formulaText": "Uptime = (1 − checks falhos ÷ checks totais) × 100, agregado por hora no período. A meta vem do contrato de serviço público publicado pela agência.",
+    "methodologyLink": "Ver metodologia completa"
+  },
   "IncidentsTable": {
     "ariaLabel": "Incidentes",
     "columns": {

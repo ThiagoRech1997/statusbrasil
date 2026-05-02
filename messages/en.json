@@ -101,6 +101,28 @@
     "ariaUptimeUnavailable": "no uptime data for the last 7 days",
     "ariaLastIncident": "last incident {time}"
   },
+  "SLABox": {
+    "heading": "SLA",
+    "targetLabel": "Target",
+    "targetMissing": "No target set",
+    "periods": {
+      "currentMonth": "Current month",
+      "previousMonth": "Previous month",
+      "yearToDate": "Year-to-date {year}"
+    },
+    "deltaAbove": "+{value} pp above target",
+    "deltaBelow": "{value} pp below target",
+    "deltaMet": "on target",
+    "actualUnknown": "no data",
+    "rowAria": "{period} ({rangeLabel}): {value}, {comparison}",
+    "rowAriaUnknown": "{period} ({rangeLabel}): no data",
+    "comparisonAbove": "above the {target} target",
+    "comparisonBelow": "below the {target} target",
+    "comparisonNoTarget": "no target to compare",
+    "formulaToggle": "How we calculate",
+    "formulaText": "Uptime = (1 − failed checks ÷ total checks) × 100, hourly aggregated within the period. The target comes from the public service contract published by the agency.",
+    "methodologyLink": "Read the full methodology"
+  },
   "IncidentsTable": {
     "ariaLabel": "Incidents",
     "columns": {
