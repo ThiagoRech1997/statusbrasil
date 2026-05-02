@@ -48,6 +48,21 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CI: "true"
+      DATABASE_URL: postgres://user:password@localhost:5432/statusbrasil
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: statusbrasil
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U user -d statusbrasil"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -63,6 +78,12 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Apply database migrations
+        run: pnpm db:migrate
+
+      - name: Seed database
+        run: pnpm seed
 
       - name: Resolve Playwright version
         id: pw
