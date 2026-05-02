@@ -101,6 +101,18 @@
     "ariaUptimeUnavailable": "no uptime data for the last 7 days",
     "ariaLastIncident": "last incident {time}"
   },
+  "ShareButtons": {
+    "groupLabel": "Share",
+    "twitter": "Twitter",
+    "bluesky": "Bluesky",
+    "copyLink": "Copy link",
+    "copied": "Link copied",
+    "copyFailed": "Couldn't copy — please copy manually",
+    "shareTextDefault": "Current status of {service} on StatusBrasil",
+    "ariaTwitter": "Share on Twitter",
+    "ariaBluesky": "Share on Bluesky",
+    "ariaCopy": "Copy page link"
+  },
   "SLABox": {
     "heading": "SLA",
     "targetLabel": "Target",
