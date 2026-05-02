@@ -80,6 +80,18 @@
     "downtimeWithTotal": "{duration} de indisponibilidade somada hoje",
     "downtimeNone": "Nenhuma indisponibilidade somada hoje"
   },
+  "ServiceDetail": {
+    "metaTitle": "{name} — StatusBrasil",
+    "metaDescription": "Disponibilidade do serviço {name} mantido por {agency}. StatusBrasil acompanha uptime, latência e incidentes em tempo real.",
+    "agencyLabel": "Mantido por",
+    "sphereLabel": "Esfera",
+    "sphere": {
+      "federal": "Federal",
+      "estadual": "Estadual",
+      "municipal": "Municipal"
+    },
+    "officialLink": "Acessar site oficial"
+  },
   "ServiceStatusCard": {
     "status": {
       "operational": "Operacional",

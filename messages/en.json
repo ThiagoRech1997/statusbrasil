@@ -80,6 +80,18 @@
     "downtimeWithTotal": "{duration} of accumulated downtime today",
     "downtimeNone": "No accumulated downtime today"
   },
+  "ServiceDetail": {
+    "metaTitle": "{name} — StatusBrasil",
+    "metaDescription": "Availability of {name} maintained by {agency}. StatusBrasil tracks uptime, latency and incidents in real time.",
+    "agencyLabel": "Maintained by",
+    "sphereLabel": "Sphere",
+    "sphere": {
+      "federal": "Federal",
+      "estadual": "State",
+      "municipal": "Municipal"
+    },
+    "officialLink": "Open official site"
+  },
   "ServiceStatusCard": {
     "status": {
       "operational": "Operational",
