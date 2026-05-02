@@ -80,6 +80,20 @@
     "downtimeWithTotal": "{duration} of accumulated downtime today",
     "downtimeNone": "No accumulated downtime today"
   },
+  "ServiceOgImage": {
+    "brand": "StatusBrasil",
+    "status": {
+      "operational": "Operational",
+      "degraded": "Degraded",
+      "down": "Down",
+      "unknown": "No data"
+    },
+    "uptimeLabel": "Uptime over the last 30 days",
+    "uptimeUnknown": "No uptime data",
+    "tagline": "Brazilian government services availability tracker",
+    "notFoundTitle": "Service not found",
+    "notFoundDescription": "Check the link or go back to the services list."
+  },
   "ServiceStatusCard": {
     "status": {
       "operational": "Operational",

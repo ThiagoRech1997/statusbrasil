@@ -80,6 +80,20 @@
     "downtimeWithTotal": "{duration} de indisponibilidade somada hoje",
     "downtimeNone": "Nenhuma indisponibilidade somada hoje"
   },
+  "ServiceOgImage": {
+    "brand": "StatusBrasil",
+    "status": {
+      "operational": "Operacional",
+      "degraded": "Instável",
+      "down": "Fora do ar",
+      "unknown": "Sem dados"
+    },
+    "uptimeLabel": "Uptime nos últimos 30 dias",
+    "uptimeUnknown": "Sem dados de uptime",
+    "tagline": "Disponibilidade dos serviços do governo brasileiro",
+    "notFoundTitle": "Serviço não encontrado",
+    "notFoundDescription": "Confira o link ou volte para a lista de serviços."
+  },
   "ServiceStatusCard": {
     "status": {
       "operational": "Operacional",
