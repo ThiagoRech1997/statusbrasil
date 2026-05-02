@@ -94,6 +94,18 @@
     "notFoundTitle": "Serviço não encontrado",
     "notFoundDescription": "Confira o link ou volte para a lista de serviços."
   },
+  "ServiceDetail": {
+    "metaTitle": "{name} — StatusBrasil",
+    "metaDescription": "Disponibilidade do serviço {name} mantido por {agency}. StatusBrasil acompanha uptime, latência e incidentes em tempo real.",
+    "agencyLabel": "Mantido por",
+    "sphereLabel": "Esfera",
+    "sphere": {
+      "federal": "Federal",
+      "estadual": "Estadual",
+      "municipal": "Municipal"
+    },
+    "officialLink": "Acessar site oficial"
+  },
   "ServiceStatusCard": {
     "status": {
       "operational": "Operacional",
