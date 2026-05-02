@@ -6,6 +6,8 @@ import { cache } from "react";
 import { routing } from "@/i18n/routing";
 import { db } from "@/lib/db";
 import { getServiceBySlug, listServices, type ServiceRow } from "@/lib/queries/services";
+import { serializeJsonLd } from "@/lib/seo/home-jsonld";
+import { buildServiceJsonLd } from "@/lib/seo/service-jsonld";
 
 export const revalidate = 60;
 
@@ -73,9 +75,56 @@ export default async function ServiceDetailPage({
   const service = await loadService(slug);
   if (!service) notFound();
 
-  const t = await getTranslations("ServiceDetail");
+  const [t, tHome, tCategories] = await Promise.all([
+    getTranslations("ServiceDetail"),
+    getTranslations("Home"),
+    getTranslations("Categories"),
+  ]);
 
-  return <ServiceHeader service={service} t={t} />;
+  const jsonLd = serializeJsonLd(
+    buildServiceJsonLd({
+      siteUrl: siteUrl(),
+      locale,
+      brandName: tHome("heading"),
+      service: {
+        slug: service.slug,
+        name: service.name,
+        agency: service.agency,
+        // Use the stable category slug (locale-independent) as the schema.org
+        // `serviceType` so the same service emits the same taxonomy value
+        // across locales. The localized label only feeds the breadcrumb.
+        serviceType: service.category,
+        description: service.description,
+        officialUrl: service.url,
+      },
+      category: {
+        key: service.category,
+        label: tCategoryLabel(tCategories, service.category),
+      },
+    }),
+  );
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD must be inlined; serializeJsonLd escapes `<` to keep the tag safe.
+        dangerouslySetInnerHTML={{ __html: jsonLd }}
+      />
+      <ServiceHeader service={service} t={t} />
+    </>
+  );
+}
+
+function tCategoryLabel(
+  tCategories: Awaited<ReturnType<typeof getTranslations<"Categories">>>,
+  category: string,
+): string {
+  // `services.category` is a free-form text column; we cast through `never` to
+  // ask next-intl about an arbitrary string key. Falls back to the raw slug if
+  // the category isn't in the Categories namespace, so a future seed value
+  // doesn't break the page.
+  return tCategories.has(category as never) ? tCategories(category as never) : category;
 }
 
 function ServiceHeader({

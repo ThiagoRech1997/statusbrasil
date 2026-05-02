@@ -75,6 +75,6 @@ export function buildHomeJsonLd(input: HomeJsonLdInput): HomeJsonLdGraph {
  * Serializes JSON-LD for safe inlining inside `<script type="application/ld+json">`.
  * Escapes `<` so a `</script>` substring inside a value cannot close the tag.
  */
-export function serializeJsonLd(graph: HomeJsonLdGraph): string {
+export function serializeJsonLd(graph: object): string {
   return JSON.stringify(graph).replace(/</g, "\\u003c");
 }
