@@ -104,4 +104,28 @@ describe("pickContrast", () => {
     expect(result?.best.uptime24hPct).toBe(80);
     expect(result?.worst.uptime24hPct).toBe(95);
   });
+
+  it("returns null for an empty list", () => {
+    expect(pickContrast([])).toBeNull();
+  });
+
+  it("still returns a pair when every service is at 100% (all up)", () => {
+    const result = pickContrast([
+      svc({ slug: "rf", category: "arrecadacao", uptime24hPct: 100 }),
+      svc({ slug: "ecac", category: "arrecadacao", uptime24hPct: 100 }),
+      svc({ slug: "inss", category: "atendimento", uptime24hPct: 100 }),
+      svc({ slug: "fgts", category: "atendimento", uptime24hPct: 100 }),
+    ]);
+    expect(result?.best.uptime24hPct).toBe(100);
+    expect(result?.worst.uptime24hPct).toBe(100);
+  });
+
+  it("still returns a pair when every service is at 0% (all down)", () => {
+    const result = pickContrast([
+      svc({ slug: "rf", category: "arrecadacao", uptime24hPct: 0 }),
+      svc({ slug: "inss", category: "atendimento", uptime24hPct: 0 }),
+    ]);
+    expect(result?.best.uptime24hPct).toBe(0);
+    expect(result?.worst.uptime24hPct).toBe(0);
+  });
 });

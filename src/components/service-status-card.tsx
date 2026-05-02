@@ -8,7 +8,7 @@ const PILL_CLASSES: Record<ServiceStatus, string> = {
   operational: "bg-operational text-operational-foreground",
   degraded: "bg-degraded text-degraded-foreground",
   down: "bg-down text-down-foreground",
-  unknown: "bg-muted text-muted-foreground",
+  unknown: "bg-secondary text-secondary-foreground",
 };
 
 export interface ServiceStatusCardProps {
