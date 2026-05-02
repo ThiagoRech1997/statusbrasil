@@ -106,6 +106,31 @@ function buildRegistry(): OpenAPIRegistry {
     },
   });
 
+  const svgResponse = (description: string) => ({
+    description,
+    content: { "image/svg+xml": { schema: z.string() } },
+  });
+
+  registry.registerPath({
+    method: "get",
+    path: "/api/badge/{slug}/v1.svg",
+    summary: "Versioned SVG status badge for a service",
+    description:
+      "Renders a shields.io-style SVG showing the rolling 30-day uptime for a service. " +
+      "Designed for hotlinked <img> embeds (READMEs, status pages); the v1 path is " +
+      "schema-locked so the response is served with `Cache-Control: public, max-age=86400, " +
+      "immutable`. A bump to /v2.svg is required for any visual schema change. Bucket " +
+      "`badge` is rate-limited at 60 req/min/IP independently of the JSON API.",
+    request: { params: slugParam },
+    responses: {
+      200: svgResponse("Badge SVG (immutable for 24h)"),
+      400: svgResponse("Invalid slug — returns a fallback 'invalid slug' badge"),
+      404: svgResponse("Unknown service — returns a fallback 'unknown' badge"),
+      429: svgResponse("Rate limited — returns a fallback 'rate limited' badge"),
+      500: svgResponse("Server error — returns a fallback 'error' badge"),
+    },
+  });
+
   return registry;
 }
 

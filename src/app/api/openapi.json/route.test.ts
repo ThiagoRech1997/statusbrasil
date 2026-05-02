@@ -18,6 +18,6 @@ describe("GET /api/openapi.json", () => {
     const res = await GET(new Request("http://localhost/api/openapi.json"));
     const body = (await res.json()) as { openapi: string; paths: Record<string, unknown> };
     expect(body.openapi).toBe("3.1.0");
-    expect(Object.keys(body.paths)).toHaveLength(4);
+    expect(Object.keys(body.paths)).toHaveLength(5);
   });
 });

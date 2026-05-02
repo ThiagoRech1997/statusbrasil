@@ -24,13 +24,14 @@ describe("generateOpenApiSpec", () => {
     expect(spec.components?.securitySchemes).toBeUndefined();
   });
 
-  it("documents the four v1 endpoints under paths", () => {
+  it("documents the v1 JSON endpoints and the versioned badge SVG under paths", () => {
     const paths = Object.keys(spec.paths ?? {});
     expect(paths).toContain("/api/v1/services");
     expect(paths).toContain("/api/v1/services/{slug}");
     expect(paths).toContain("/api/v1/services/{slug}/history");
     expect(paths).toContain("/api/v1/incidents");
-    expect(paths).toHaveLength(4);
+    expect(paths).toContain("/api/badge/{slug}/v1.svg");
+    expect(paths).toHaveLength(5);
   });
 
   it("uses GET for every endpoint", () => {
@@ -56,22 +57,23 @@ describe("generateOpenApiSpec", () => {
     );
   });
 
-  it("references ApiErrorResponse via $ref on every error response", () => {
+  it("references ApiErrorResponse via $ref on every JSON error response", () => {
     const expectedRef = "#/components/schemas/ApiErrorResponse";
     let errorResponseCount = 0;
     for (const item of Object.values(spec.paths ?? {})) {
       const get = (item as { get?: { responses?: Record<string, unknown> } }).get;
       const responses = get?.responses ?? {};
       for (const [status, response] of Object.entries(responses)) {
-        if (Number(status) >= 400) {
-          errorResponseCount++;
-          const schema = (
-            response as {
-              content?: { "application/json"?: { schema?: { $ref?: string } } };
-            }
-          ).content?.["application/json"]?.schema;
-          expect(schema?.$ref, `path response ${status}`).toBe(expectedRef);
-        }
+        if (Number(status) < 400) continue;
+        const json = (
+          response as {
+            content?: { "application/json"?: { schema?: { $ref?: string } } };
+          }
+        ).content?.["application/json"];
+        // Skip non-JSON error responses (e.g., SVG badge fallbacks).
+        if (!json) continue;
+        errorResponseCount++;
+        expect(json.schema?.$ref, `path response ${status}`).toBe(expectedRef);
       }
     }
     expect(errorResponseCount).toBeGreaterThanOrEqual(8);
