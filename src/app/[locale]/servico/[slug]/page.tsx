@@ -3,9 +3,21 @@ import { notFound } from "next/navigation";
 import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { cache } from "react";
+import { LatencyChart } from "@/components/charts/latency-chart";
+import { type UptimeBarPoint, UptimeBars } from "@/components/charts/uptime-bars";
+import { IncidentsTable } from "@/components/incidents-table";
+import { ShareButtons } from "@/components/share-buttons";
+import { SLABox } from "@/components/sla-box";
 import { routing } from "@/i18n/routing";
 import { db } from "@/lib/db";
+import { listIncidents } from "@/lib/queries/incidents";
+import {
+  getDailyUptimeBars,
+  getLatencyByWindow,
+  getYearToDateSummary,
+} from "@/lib/queries/service-detail";
 import { getServiceBySlug, listServices, type ServiceRow } from "@/lib/queries/services";
+import { getMonthSummary } from "@/lib/queries/uptime";
 import { serializeJsonLd } from "@/lib/seo/home-jsonld";
 import { buildServiceJsonLd } from "@/lib/seo/service-jsonld";
 
@@ -75,11 +87,47 @@ export default async function ServiceDetailPage({
   const service = await loadService(slug);
   if (!service) notFound();
 
-  const [t, tHome, tCategories] = await Promise.all([
+  const now = new Date();
+  const previousMonthDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1));
+
+  const [
+    t,
+    tHome,
+    tCategories,
+    dailyBars,
+    latencyWindows,
+    currentMonthSummary,
+    previousMonthSummary,
+    ytdSummary,
+    incidentRows,
+  ] = await Promise.all([
     getTranslations("ServiceDetail"),
     getTranslations("Home"),
     getTranslations("Categories"),
+    getDailyUptimeBars(db, slug, 90, { now }),
+    getLatencyByWindow(db, slug, { now }),
+    getMonthSummary(db, slug, now),
+    getMonthSummary(db, slug, previousMonthDate),
+    getYearToDateSummary(db, slug, { now }),
+    listIncidents(db, { serviceSlug: slug, limit: 200 }),
   ]);
+
+  const incidentCountByDay = new Map<number, number>();
+  for (const incident of incidentRows) {
+    const dayStart = Date.UTC(
+      incident.startedAt.getUTCFullYear(),
+      incident.startedAt.getUTCMonth(),
+      incident.startedAt.getUTCDate(),
+    );
+    incidentCountByDay.set(dayStart, (incidentCountByDay.get(dayStart) ?? 0) + 1);
+  }
+  const uptimeBarsData: UptimeBarPoint[] = dailyBars.map((p) => ({
+    date: p.date,
+    uptimePct: p.uptimePct,
+    incidentCount: incidentCountByDay.get(p.date.getTime()) ?? 0,
+  }));
+
+  const canonicalUrl = `${siteUrl()}/${locale}/servico/${slug}`;
 
   const jsonLd = serializeJsonLd(
     buildServiceJsonLd({
@@ -111,7 +159,28 @@ export default async function ServiceDetailPage({
         // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD must be inlined; serializeJsonLd escapes `<` to keep the tag safe.
         dangerouslySetInnerHTML={{ __html: jsonLd }}
       />
-      <ServiceHeader service={service} t={t} />
+      <div className="mx-auto flex w-full max-w-screen-2xl flex-1 flex-col gap-10 px-4 py-10 sm:px-6 sm:py-14">
+        <ServiceHeader service={service} t={t} />
+        <ShareButtons url={canonicalUrl} serviceName={service.name} />
+        <section data-slot="service-detail-uptime" aria-label="Uptime">
+          <UptimeBars data={uptimeBarsData} serviceName={service.name} />
+        </section>
+        <section data-slot="service-detail-latency" aria-label="Latency">
+          <LatencyChart windows={latencyWindows} serviceName={service.name} />
+        </section>
+        <section data-slot="service-detail-sla" aria-label="SLA">
+          <SLABox
+            target={null}
+            currentMonth={currentMonthSummary.uptimePct}
+            previousMonth={previousMonthSummary.uptimePct}
+            yearToDate={ytdSummary.uptimePct}
+            now={now}
+          />
+        </section>
+        <section data-slot="service-detail-incidents" aria-label="Incidents">
+          <IncidentsTable incidents={incidentRows} now={now} />
+        </section>
+      </div>
     </>
   );
 }
@@ -135,35 +204,33 @@ function ServiceHeader({
   t: Awaited<ReturnType<typeof getTranslations<"ServiceDetail">>>;
 }) {
   return (
-    <div className="mx-auto flex w-full max-w-screen-2xl flex-1 flex-col gap-8 px-4 py-10 sm:px-6 sm:py-14">
-      <header className="flex flex-col gap-3">
-        <h1 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
-          {service.name}
-        </h1>
-        <dl className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
-          <div className="flex items-baseline gap-2">
-            <dt className="font-medium text-foreground/80">{t("agencyLabel")}:</dt>
-            <dd>{service.agency}</dd>
-          </div>
-          <div className="flex items-baseline gap-2">
-            <dt className="font-medium text-foreground/80">{t("sphereLabel")}:</dt>
-            <dd>{t(`sphere.${service.sphere}`)}</dd>
-          </div>
-        </dl>
-        {service.description ? (
-          <p className="max-w-3xl text-balance text-base text-muted-foreground">
-            {service.description}
-          </p>
-        ) : null}
-        <a
-          href={service.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex w-fit items-center gap-1 text-sm font-medium underline-offset-4 hover:underline focus-visible:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          {t("officialLink")} <span aria-hidden>↗</span>
-        </a>
-      </header>
-    </div>
+    <header className="flex flex-col gap-3">
+      <h1 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
+        {service.name}
+      </h1>
+      <dl className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
+        <div className="flex items-baseline gap-2">
+          <dt className="font-medium text-foreground/80">{t("agencyLabel")}:</dt>
+          <dd>{service.agency}</dd>
+        </div>
+        <div className="flex items-baseline gap-2">
+          <dt className="font-medium text-foreground/80">{t("sphereLabel")}:</dt>
+          <dd>{t(`sphere.${service.sphere}`)}</dd>
+        </div>
+      </dl>
+      {service.description ? (
+        <p className="max-w-3xl text-balance text-base text-muted-foreground">
+          {service.description}
+        </p>
+      ) : null}
+      <a
+        href={service.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex w-fit items-center gap-1 text-sm font-medium underline-offset-4 hover:underline focus-visible:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      >
+        {t("officialLink")} <span aria-hidden>↗</span>
+      </a>
+    </header>
   );
 }
