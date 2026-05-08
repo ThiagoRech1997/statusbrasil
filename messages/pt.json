@@ -239,6 +239,44 @@
     "tableUnknown": "sem dados",
     "empty": "Sem dados para exibir."
   },
+  "Comparativo": {
+    "metaTitle": "Comparativos — StatusBrasil",
+    "metaDescription": "Compare a disponibilidade de serviços do governo brasileiro lado a lado. Cinco recortes editoriais começam o caminho.",
+    "heading": "Comparativos",
+    "tagline": "Coloque serviços do governo brasileiro lado a lado e veja a assimetria de operação em números.",
+    "featuredHeading": "Comparativos editoriais",
+    "featuredIntro": "Cinco recortes que a gente acompanha. Cada um abre uma comparação pré-preenchida — você pode trocar os serviços depois.",
+    "cardCta": "Abrir comparativo",
+    "cardServicesLabel": "Serviços comparados",
+    "cardAriaLabel": "Abrir comparativo: {title}",
+    "featured": {
+      "receita-vs-inss": {
+        "title": "Receita Federal × Meu INSS",
+        "angle": "Arrecadação × atendimento",
+        "description": "O sistema que cobra impostos ao lado do que paga benefícios. Mesmo Estado, dois patamares de operação."
+      },
+      "ecac-vs-fgts": {
+        "title": "e-CAC × FGTS",
+        "angle": "Fisco × benefício",
+        "description": "Atendimento virtual ao contribuinte ao lado da consulta ao Fundo de Garantia. Quem cobra precisa estar no ar — e quem entrega benefício?"
+      },
+      "importa-vs-conectesus": {
+        "title": "Importa Fácil × ConecteSUS",
+        "angle": "Comércio exterior × saúde",
+        "description": "Tributação de remessas postais ao lado da carteira digital de vacinação. Encomenda parada custa imposto; consulta médica parada custa saúde."
+      },
+      "govbr-vs-detran-sp": {
+        "title": "gov.br × Detran-SP",
+        "angle": "Federal unificado × estadual",
+        "description": "O portal único federal diante do maior Detran do país. A vitrine da modernização digital ao lado do trânsito do estado mais populoso."
+      },
+      "simples-vs-ctps": {
+        "title": "Simples Nacional × Carteira de Trabalho Digital",
+        "angle": "Empreendedor × trabalhador",
+        "description": "Tributação simplificada de quem empreende ao lado da carteira digital de quem trabalha CLT. Dois lados da economia formal."
+      }
+    }
+  },
   "RankingOgImage": {
     "brand": "StatusBrasil",
     "title": "Piores Serviços por Uptime",
