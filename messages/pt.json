@@ -288,7 +288,8 @@
     "metaTitle": "Ranking — StatusBrasil",
     "metaDescription": "Ranking de disponibilidade dos serviços do governo brasileiro. Piores serviços por uptime em primeiro.",
     "heading": "Ranking de disponibilidade",
-    "tagline": "Todos os serviços monitorados, do pior uptime para o melhor."
+    "tagline": "Todos os serviços monitorados, do pior uptime para o melhor.",
+    "exportCsv": "Exportar CSV"
   },
   "SortableServicesTable": {
     "ariaLabel": "Serviços governamentais",
