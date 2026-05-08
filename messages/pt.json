@@ -284,6 +284,12 @@
     "uptimeLabel": "Uptime 30d",
     "emptyLabel": "Nenhum serviço com dados suficientes"
   },
+  "Ranking": {
+    "metaTitle": "Ranking — StatusBrasil",
+    "metaDescription": "Ranking de disponibilidade dos serviços do governo brasileiro. Piores serviços por uptime em primeiro.",
+    "heading": "Ranking de disponibilidade",
+    "tagline": "Todos os serviços monitorados, do pior uptime para o melhor."
+  },
   "SortableServicesTable": {
     "ariaLabel": "Serviços governamentais",
     "columns": {
@@ -301,14 +307,21 @@
     "filter": {
       "allCategories": "Todas as categorias",
       "allStatuses": "Todos os status",
+      "allSpheres": "Todas as esferas",
       "categoryLabel": "Filtrar por categoria",
-      "statusLabel": "Filtrar por status"
+      "statusLabel": "Filtrar por status",
+      "sphereLabel": "Filtrar por esfera"
     },
     "status": {
       "operational": "Operacional",
       "degraded": "Instável",
       "down": "Fora do ar",
       "unknown": "Indeterminado"
+    },
+    "sphere": {
+      "federal": "Federal",
+      "estadual": "Estadual",
+      "municipal": "Municipal"
     },
     "empty": "Nenhum serviço encontrado com esses filtros.",
     "uptimeUnknown": "—",

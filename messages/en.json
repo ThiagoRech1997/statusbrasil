@@ -277,6 +277,12 @@
       }
     }
   },
+  "Ranking": {
+    "metaTitle": "Ranking — StatusBrasil",
+    "metaDescription": "Availability ranking of Brazilian government services. Worst services by uptime first.",
+    "heading": "Availability ranking",
+    "tagline": "All monitored services, from worst uptime to best."
+  },
   "RankingOgImage": {
     "brand": "StatusBrasil",
     "title": "Worst Services by Uptime",
@@ -301,14 +307,21 @@
     "filter": {
       "allCategories": "All categories",
       "allStatuses": "All statuses",
+      "allSpheres": "All spheres",
       "categoryLabel": "Filter by category",
-      "statusLabel": "Filter by status"
+      "statusLabel": "Filter by status",
+      "sphereLabel": "Filter by sphere"
     },
     "status": {
       "operational": "Operational",
       "degraded": "Degraded",
       "down": "Down",
       "unknown": "Unknown"
+    },
+    "sphere": {
+      "federal": "Federal",
+      "estadual": "State",
+      "municipal": "Municipal"
     },
     "empty": "No services found with these filters.",
     "uptimeUnknown": "—",
