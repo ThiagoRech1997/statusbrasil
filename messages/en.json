@@ -238,5 +238,43 @@
     "tableHeaderIncidents": "Incidents",
     "tableUnknown": "no data",
     "empty": "No data to display."
+  },
+  "Comparativo": {
+    "metaTitle": "Comparisons — StatusBrasil",
+    "metaDescription": "Compare Brazilian government services side by side. Five editorial angles to start.",
+    "heading": "Comparisons",
+    "tagline": "Put Brazilian government services side by side and see the asymmetry in numbers.",
+    "featuredHeading": "Editorial comparisons",
+    "featuredIntro": "Five angles we keep an eye on. Each opens a pre-filled comparison — you can swap services afterwards.",
+    "cardCta": "Open comparison",
+    "cardServicesLabel": "Services compared",
+    "cardAriaLabel": "Open comparison: {title}",
+    "featured": {
+      "receita-vs-inss": {
+        "title": "Federal Revenue × Meu INSS",
+        "angle": "Tax collection × public service",
+        "description": "The system that collects taxes next to the one that pays benefits. Same State, two operational standards."
+      },
+      "ecac-vs-fgts": {
+        "title": "e-CAC × FGTS",
+        "angle": "Tax authority × worker benefit",
+        "description": "Virtual taxpayer service next to the Severance Fund lookup. The portal that collects has to be online — does the one that pays out, too?"
+      },
+      "importa-vs-conectesus": {
+        "title": "Importa Fácil × ConecteSUS",
+        "angle": "Customs × public health",
+        "description": "Customs taxation of inbound parcels next to the digital vaccination card. A stuck parcel costs revenue; a stuck health record costs care."
+      },
+      "govbr-vs-detran-sp": {
+        "title": "gov.br × Detran-SP",
+        "angle": "Unified federal × state",
+        "description": "Brazil's unified federal portal next to the country's largest state DMV. The digital flagship alongside the most populous state's traffic agency."
+      },
+      "simples-vs-ctps": {
+        "title": "Simples Nacional × Digital Work Card",
+        "angle": "Entrepreneur × employee",
+        "description": "The simplified tax regime for small business owners next to the digital ID for formal employees. Two sides of the formal economy."
+      }
+    }
   }
 }
