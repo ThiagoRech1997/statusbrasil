@@ -96,7 +96,7 @@ describe("UptimeBars", () => {
     ];
     renderBars(data);
 
-    const svg = screen.getByRole("img");
+    const svg = screen.getByRole("group", { name: /Uptime diário de Receita Federal/ });
     const tableId = svg.getAttribute("aria-describedby");
     expect(tableId).toBeTruthy();
 
@@ -179,7 +179,7 @@ describe("UptimeBars", () => {
   it("renders an empty placeholder when data is empty", () => {
     renderBars([]);
     expect(screen.getByText("Sem dados para exibir.")).toBeInTheDocument();
-    expect(screen.queryByRole("img")).toBeNull();
+    expect(screen.queryByRole("group", { name: /Uptime diário/ })).toBeNull();
   });
 
   it("uses EN messages and number formatting when locale=en", () => {
@@ -192,8 +192,10 @@ describe("UptimeBars", () => {
       screen.getByRole("button", { name: "January 12: 99.5% uptime, 1 incident" }),
     ).toBeInTheDocument();
 
-    const svgTitle = screen.getByRole("img").querySelector("title");
-    expect(svgTitle?.textContent).toBe("Daily uptime for Receita Federal over the last 1 days");
+    const svg = screen.getByRole("group", {
+      name: "Daily uptime for Receita Federal over the last 1 days",
+    });
+    expect(svg).toBeInTheDocument();
   });
 
   it("wraps the chart in a horizontally scrollable container for mobile", () => {
