@@ -72,7 +72,7 @@ describe("LatencyChart", () => {
   it("links the SVG to a sr-only data table via aria-describedby", () => {
     const samples = makeSamples(3);
     const { container } = renderChart(makeAllWindows(samples));
-    const svg = screen.getByRole("img");
+    const svg = screen.getByRole("group", { name: /Latência de Receita Federal/ });
     const describedBy = svg.getAttribute("aria-describedby");
     expect(describedBy).toBeTruthy();
 
@@ -193,8 +193,10 @@ describe("LatencyChart", () => {
       "true",
     );
 
-    const titleEl = screen.getByRole("img").querySelector("title");
-    expect(titleEl?.textContent).toBe("Latency for Receita Federal (Last 7 days)");
+    const svg = screen.getByRole("group", {
+      name: "Latency for Receita Federal (Last 7 days)",
+    });
+    expect(svg).toBeInTheDocument();
   });
 
   it("respects the defaultWindow prop", () => {

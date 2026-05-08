@@ -43,7 +43,6 @@ export function UptimeBars({ data, serviceName, className }: UptimeBarsProps) {
   const barRefs = useRef<(SVGRectElement | null)[]>([]);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const tableId = useId();
-  const captionId = useId();
 
   const innerWidth = data.length * (BAR_WIDTH + BAR_GAP);
 
@@ -120,18 +119,16 @@ export function UptimeBars({ data, serviceName, className }: UptimeBarsProps) {
     <div className={cn("flex flex-col gap-2", className)} data-slot="uptime-bars">
       <div className="snap-x snap-proximity overflow-x-auto [-webkit-overflow-scrolling:touch] [scrollbar-width:thin]">
         <div className="relative inline-block" style={{ minWidth: innerWidth }}>
+          {/* biome-ignore lint/a11y/useSemanticElements: SVG cannot be replaced with <fieldset>; role="group" is required so interactive <rect role="button"> descendants are valid ARIA. */}
           <svg
-            role="img"
-            aria-labelledby={captionId}
+            role="group"
+            aria-label={t("ariaLabel", { service: serviceName, count: data.length })}
             aria-describedby={tableId}
             width={innerWidth}
             height={HEIGHT}
             viewBox={`0 0 ${innerWidth} ${HEIGHT}`}
             className="block"
           >
-            <title id={captionId}>
-              {t("ariaLabel", { service: serviceName, count: data.length })}
-            </title>
             {data.map((point, i) => {
               const bucket = bucketUptime(point.uptimePct);
               const x = xScale(i) ?? 0;

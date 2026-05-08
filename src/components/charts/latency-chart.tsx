@@ -63,7 +63,6 @@ export function LatencyChart({
   const [activeWindow, setActiveWindow] = useState<LatencyWindow>(defaultWindow);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const overlayRef = useRef<SVGRectElement | null>(null);
-  const captionId = useId();
   const tableId = useId();
   const instructionsId = useId();
 
@@ -175,21 +174,19 @@ export function LatencyChart({
       <WindowToggle activeWindow={activeWindow} onChange={onWindowChange} />
       <div className="overflow-x-auto [-webkit-overflow-scrolling:touch] [scrollbar-width:thin]">
         <div className="relative inline-block" style={{ width: WIDTH }}>
+          {/* biome-ignore lint/a11y/useSemanticElements: SVG cannot be replaced with <fieldset>; role="group" is required so the interactive overlay <rect role="button"> descendant is valid ARIA. */}
           <svg
-            role="img"
-            aria-labelledby={captionId}
+            role="group"
+            aria-label={t("ariaLabel", {
+              service: serviceName,
+              window: t(`windowAria.${activeWindow}`),
+            })}
             aria-describedby={`${tableId} ${instructionsId}`}
             viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
             width={WIDTH}
             height={HEIGHT}
             className="block text-foreground"
           >
-            <title id={captionId}>
-              {t("ariaLabel", {
-                service: serviceName,
-                window: t(`windowAria.${activeWindow}`),
-              })}
-            </title>
             {samples.length === 0 || !xScale || !yScale ? (
               <text
                 x={WIDTH / 2}
