@@ -13,6 +13,7 @@ import {
   isNull,
   lt,
   lte,
+  max,
   or,
   sum,
 } from "drizzle-orm";
@@ -189,6 +190,134 @@ export interface Rolling30dOptions {
 }
 
 const DAYS_30 = 30;
+const DAYS_90 = 90;
+
+export interface BatchRollingUptimeSummary {
+  uptime30dPct: number | null;
+  uptime90dPct: number | null;
+  mttr30dSeconds: number | null;
+  lastIncidentAt: Date | null;
+}
+
+export async function getBatchRollingUptimeSummary(
+  db: DB,
+  slugs: string[],
+  opts: { now?: Date } = {},
+): Promise<Map<string, BatchRollingUptimeSummary>> {
+  if (slugs.length === 0) return new Map();
+
+  const now = opts.now ?? new Date();
+  const start30d = new Date(now.getTime() - DAYS_30 * HOURS_PER_DAY * MS_PER_HOUR);
+  const start90d = new Date(now.getTime() - DAYS_90 * HOURS_PER_DAY * MS_PER_HOUR);
+
+  const [rows30d, rows90d, mttrRows, incidentRows] = await Promise.all([
+    db
+      .select({
+        serviceSlug: serviceUptimeHourly.serviceSlug,
+        totalChecks: sum(serviceUptimeHourly.totalChecks).mapWith(Number),
+        failedChecks: sum(serviceUptimeHourly.failedChecks).mapWith(Number),
+      })
+      .from(serviceUptimeHourly)
+      .where(
+        and(
+          inArray(serviceUptimeHourly.serviceSlug, slugs),
+          gte(serviceUptimeHourly.hour, start30d),
+          lte(serviceUptimeHourly.hour, now),
+        ),
+      )
+      .groupBy(serviceUptimeHourly.serviceSlug),
+
+    db
+      .select({
+        serviceSlug: serviceUptimeHourly.serviceSlug,
+        totalChecks: sum(serviceUptimeHourly.totalChecks).mapWith(Number),
+        failedChecks: sum(serviceUptimeHourly.failedChecks).mapWith(Number),
+      })
+      .from(serviceUptimeHourly)
+      .where(
+        and(
+          inArray(serviceUptimeHourly.serviceSlug, slugs),
+          gte(serviceUptimeHourly.hour, start90d),
+          lte(serviceUptimeHourly.hour, now),
+        ),
+      )
+      .groupBy(serviceUptimeHourly.serviceSlug),
+
+    db
+      .select({
+        serviceSlug: incidents.serviceSlug,
+        avgDurationSeconds: avg(incidents.durationSeconds).mapWith(Number),
+        closedCount: count(incidents.id),
+      })
+      .from(incidents)
+      .where(
+        and(
+          inArray(incidents.serviceSlug, slugs),
+          isNotNull(incidents.endedAt),
+          gte(incidents.endedAt, start30d),
+          lte(incidents.endedAt, now),
+        ),
+      )
+      .groupBy(incidents.serviceSlug),
+
+    db
+      .select({
+        serviceSlug: incidents.serviceSlug,
+        lastStartedAt: max(incidents.startedAt),
+      })
+      .from(incidents)
+      .where(inArray(incidents.serviceSlug, slugs))
+      .groupBy(incidents.serviceSlug),
+  ]);
+
+  const result = new Map<string, BatchRollingUptimeSummary>();
+
+  const uptime30dBySlug = new Map<string, { total: number; failed: number }>();
+  for (const row of rows30d) {
+    uptime30dBySlug.set(row.serviceSlug, {
+      total: row.totalChecks ?? 0,
+      failed: row.failedChecks ?? 0,
+    });
+  }
+
+  const uptime90dBySlug = new Map<string, { total: number; failed: number }>();
+  for (const row of rows90d) {
+    uptime90dBySlug.set(row.serviceSlug, {
+      total: row.totalChecks ?? 0,
+      failed: row.failedChecks ?? 0,
+    });
+  }
+
+  const mttrBySlug = new Map<string, number>();
+  for (const row of mttrRows) {
+    if ((row.closedCount ?? 0) > 0 && row.avgDurationSeconds != null) {
+      mttrBySlug.set(row.serviceSlug, Math.round(row.avgDurationSeconds));
+    }
+  }
+
+  const lastIncidentBySlug = new Map<string, Date>();
+  for (const row of incidentRows) {
+    if (row.lastStartedAt instanceof Date) {
+      lastIncidentBySlug.set(row.serviceSlug, row.lastStartedAt);
+    } else if (typeof row.lastStartedAt === "string") {
+      lastIncidentBySlug.set(row.serviceSlug, new Date(row.lastStartedAt));
+    }
+  }
+
+  for (const slug of slugs) {
+    const u30 = uptime30dBySlug.get(slug);
+    const u90 = uptime90dBySlug.get(slug);
+
+    result.set(slug, {
+      uptime30dPct: u30 && u30.total > 0 ? ((u30.total - u30.failed) / u30.total) * 100 : null,
+      uptime90dPct: u90 && u90.total > 0 ? ((u90.total - u90.failed) / u90.total) * 100 : null,
+      mttr30dSeconds: mttrBySlug.get(slug) ?? null,
+      lastIncidentAt: lastIncidentBySlug.get(slug) ?? null,
+    });
+  }
+
+  return result;
+}
 
 /**
  * Rolling 30-day summary for a service.
