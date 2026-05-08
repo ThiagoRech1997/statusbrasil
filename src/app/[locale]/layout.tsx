@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { SkipToContent } from "@/components/layout/skip-to-content";
@@ -52,16 +53,18 @@ export default async function LocaleLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
-        <NextIntlClientProvider>
-          <ThemeProvider nonce={nonce}>
-            <SkipToContent />
-            <Header />
-            <main id="main-content" className="flex flex-1 flex-col">
-              {children}
-            </main>
-            <Footer />
-          </ThemeProvider>
-        </NextIntlClientProvider>
+        <NuqsAdapter>
+          <NextIntlClientProvider>
+            <ThemeProvider nonce={nonce}>
+              <SkipToContent />
+              <Header />
+              <main id="main-content" className="flex flex-1 flex-col">
+                {children}
+              </main>
+              <Footer />
+            </ThemeProvider>
+          </NextIntlClientProvider>
+        </NuqsAdapter>
       </body>
     </html>
   );
