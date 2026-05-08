@@ -249,6 +249,31 @@
     "cardCta": "Abrir comparativo",
     "cardServicesLabel": "Serviços comparados",
     "cardAriaLabel": "Abrir comparativo: {title}",
+    "statsHeading": "Estatísticas comparadas",
+    "latencyHeading": "Latência comparada",
+    "errorTooMany": "Máximo de 4 serviços por comparativo. Reduza a seleção para até 4.",
+    "picker": {
+      "label": "Serviços para comparar",
+      "placeholder": "Buscar serviço...",
+      "removeService": "Remover {name}",
+      "maxReached": "Máximo de 4 serviços por comparativo",
+      "noResults": "Nenhum serviço encontrado",
+      "selectHint": "Selecione de 2 a 4 serviços para comparar",
+      "selected": "{count, plural, one {# serviço selecionado} other {# serviços selecionados}}"
+    },
+    "stats": {
+      "uptime30d": "Uptime 30 dias",
+      "mttr30d": "MTTR 30 dias",
+      "incidents30d": "Incidentes 30 dias",
+      "currentMonthUptime": "Uptime mês atual",
+      "noData": "—",
+      "status": {
+        "operational": "Operacional",
+        "degraded": "Instável",
+        "down": "Fora do ar",
+        "unknown": "Indeterminado"
+      }
+    },
     "featured": {
       "receita-vs-inss": {
         "title": "Receita Federal × Meu INSS",
@@ -275,6 +300,24 @@
         "angle": "Empreendedor × trabalhador",
         "description": "Tributação simplificada de quem empreende ao lado da carteira digital de quem trabalha CLT. Dois lados da economia formal."
       }
+    }
+  },
+  "MultiLatencyChart": {
+    "ariaLabel": "Latência comparada",
+    "empty": "Sem dados de latência para os serviços selecionados.",
+    "axisYLabel": "ms",
+    "windowGroupLabel": "Janela de tempo",
+    "window": {
+      "1d": "24h",
+      "7d": "7 dias",
+      "30d": "30 dias",
+      "90d": "90 dias"
+    },
+    "windowAria": {
+      "1d": "Últimas 24 horas",
+      "7d": "Últimos 7 dias",
+      "30d": "Últimos 30 dias",
+      "90d": "Últimos 90 dias"
     }
   },
   "RankingOgImage": {

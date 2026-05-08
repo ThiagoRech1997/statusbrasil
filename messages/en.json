@@ -249,6 +249,31 @@
     "cardCta": "Open comparison",
     "cardServicesLabel": "Services compared",
     "cardAriaLabel": "Open comparison: {title}",
+    "statsHeading": "Comparison stats",
+    "latencyHeading": "Latency comparison",
+    "errorTooMany": "Maximum 4 services per comparison. Reduce the selection to up to 4.",
+    "picker": {
+      "label": "Services to compare",
+      "placeholder": "Search service...",
+      "removeService": "Remove {name}",
+      "maxReached": "Maximum 4 services per comparison",
+      "noResults": "No services found",
+      "selectHint": "Select 2 to 4 services to compare",
+      "selected": "{count, plural, one {# service selected} other {# services selected}}"
+    },
+    "stats": {
+      "uptime30d": "30-day uptime",
+      "mttr30d": "30-day MTTR",
+      "incidents30d": "30-day incidents",
+      "currentMonthUptime": "Current month uptime",
+      "noData": "—",
+      "status": {
+        "operational": "Operational",
+        "degraded": "Degraded",
+        "down": "Down",
+        "unknown": "Unknown"
+      }
+    },
     "featured": {
       "receita-vs-inss": {
         "title": "Federal Revenue × Meu INSS",
@@ -283,6 +308,24 @@
     "heading": "Availability ranking",
     "tagline": "All monitored services, from worst uptime to best.",
     "exportCsv": "Export CSV"
+  },
+  "MultiLatencyChart": {
+    "ariaLabel": "Latency comparison",
+    "empty": "No latency data for the selected services.",
+    "axisYLabel": "ms",
+    "windowGroupLabel": "Time window",
+    "window": {
+      "1d": "24h",
+      "7d": "7 days",
+      "30d": "30 days",
+      "90d": "90 days"
+    },
+    "windowAria": {
+      "1d": "Last 24 hours",
+      "7d": "Last 7 days",
+      "30d": "Last 30 days",
+      "90d": "Last 90 days"
+    }
   },
   "RankingOgImage": {
     "brand": "StatusBrasil",
