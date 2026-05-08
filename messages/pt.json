@@ -238,5 +238,12 @@
     "tableHeaderIncidents": "Incidentes",
     "tableUnknown": "sem dados",
     "empty": "Sem dados para exibir."
+  },
+  "RankingOgImage": {
+    "brand": "StatusBrasil",
+    "title": "Piores Serviços por Uptime",
+    "tagline": "Disponibilidade dos serviços do governo brasileiro",
+    "uptimeLabel": "Uptime 30d",
+    "emptyLabel": "Nenhum serviço com dados suficientes"
   }
 }

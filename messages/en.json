@@ -238,5 +238,12 @@
     "tableHeaderIncidents": "Incidents",
     "tableUnknown": "no data",
     "empty": "No data to display."
+  },
+  "RankingOgImage": {
+    "brand": "StatusBrasil",
+    "title": "Worst Services by Uptime",
+    "tagline": "Brazilian government services availability",
+    "uptimeLabel": "30d uptime",
+    "emptyLabel": "No services with sufficient data"
   }
 }

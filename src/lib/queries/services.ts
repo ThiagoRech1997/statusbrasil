@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, asc, desc, eq, gte, inArray, isNull, max, sum } from "drizzle-orm";
+import { and, asc, desc, eq, gte, inArray, isNull, lte, max, sum } from "drizzle-orm";
 import type { DB } from "@/lib/db";
 import { incidents, services, serviceUptimeHourly } from "@/lib/db/schema";
 import type { IncidentSeverity } from "./incidents";
@@ -216,6 +216,62 @@ export async function getHomeDashboard(
       lastIncidentAt: lastIncidentBySlug.get(svc.slug) ?? null,
     })),
   }));
+}
+
+export interface WorstServiceUptime {
+  slug: string;
+  name: string;
+  agency: string;
+  uptime30dPct: number;
+}
+
+const THIRTY_DAYS_MS = 30 * HOURS_PER_DAY * MS_PER_HOUR;
+
+export async function getWorstServicesByUptime30d(
+  db: DB,
+  limit = 3,
+  opts: { now?: Date } = {},
+): Promise<WorstServiceUptime[]> {
+  const now = opts.now ?? new Date();
+  const start = new Date(now.getTime() - THIRTY_DAYS_MS);
+
+  const activeServices = await db
+    .select({ slug: services.slug, name: services.name, agency: services.agency })
+    .from(services)
+    .where(eq(services.active, true));
+
+  if (activeServices.length === 0) return [];
+
+  const slugs = activeServices.map((s) => s.slug);
+  const rows = await db
+    .select({
+      serviceSlug: serviceUptimeHourly.serviceSlug,
+      totalChecks: sum(serviceUptimeHourly.totalChecks).mapWith(Number),
+      failedChecks: sum(serviceUptimeHourly.failedChecks).mapWith(Number),
+    })
+    .from(serviceUptimeHourly)
+    .where(
+      and(
+        inArray(serviceUptimeHourly.serviceSlug, slugs),
+        gte(serviceUptimeHourly.hour, start),
+        lte(serviceUptimeHourly.hour, now),
+      ),
+    )
+    .groupBy(serviceUptimeHourly.serviceSlug);
+
+  const uptimeBySlug = new Map<string, number>();
+  for (const row of rows) {
+    const total = row.totalChecks ?? 0;
+    if (total === 0) continue;
+    const failed = row.failedChecks ?? 0;
+    uptimeBySlug.set(row.serviceSlug, ((total - failed) / total) * 100);
+  }
+
+  return activeServices
+    .filter((s) => uptimeBySlug.has(s.slug))
+    .map((s) => ({ ...s, uptime30dPct: uptimeBySlug.get(s.slug) as number }))
+    .sort((a, b) => a.uptime30dPct - b.uptime30dPct)
+    .slice(0, limit);
 }
 
 export async function getServiceWithStatusBySlug(
