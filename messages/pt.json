@@ -283,5 +283,36 @@
     "tagline": "Disponibilidade dos serviços do governo brasileiro",
     "uptimeLabel": "Uptime 30d",
     "emptyLabel": "Nenhum serviço com dados suficientes"
+  },
+  "SortableServicesTable": {
+    "ariaLabel": "Serviços governamentais",
+    "columns": {
+      "name": "Serviço",
+      "agency": "Órgão",
+      "category": "Categoria",
+      "status": "Status",
+      "uptime": "Uptime 1h"
+    },
+    "sort": {
+      "ascendingNow": "ordenado por {column}, crescente. Clique para inverter.",
+      "descendingNow": "ordenado por {column}, decrescente. Clique para inverter.",
+      "sortBy": "ordenar por {column}"
+    },
+    "filter": {
+      "allCategories": "Todas as categorias",
+      "allStatuses": "Todos os status",
+      "categoryLabel": "Filtrar por categoria",
+      "statusLabel": "Filtrar por status"
+    },
+    "status": {
+      "operational": "Operacional",
+      "degraded": "Instável",
+      "down": "Fora do ar",
+      "unknown": "Indeterminado"
+    },
+    "empty": "Nenhum serviço encontrado com esses filtros.",
+    "uptimeUnknown": "—",
+    "viewService": "Ver detalhes de {name}",
+    "viewServiceText": "Ver"
   }
 }

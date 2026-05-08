@@ -283,5 +283,36 @@
     "tagline": "Brazilian government services availability",
     "uptimeLabel": "30d uptime",
     "emptyLabel": "No services with sufficient data"
+  },
+  "SortableServicesTable": {
+    "ariaLabel": "Government services",
+    "columns": {
+      "name": "Service",
+      "agency": "Agency",
+      "category": "Category",
+      "status": "Status",
+      "uptime": "Uptime 1h"
+    },
+    "sort": {
+      "ascendingNow": "sorted by {column}, ascending. Click to reverse.",
+      "descendingNow": "sorted by {column}, descending. Click to reverse.",
+      "sortBy": "sort by {column}"
+    },
+    "filter": {
+      "allCategories": "All categories",
+      "allStatuses": "All statuses",
+      "categoryLabel": "Filter by category",
+      "statusLabel": "Filter by status"
+    },
+    "status": {
+      "operational": "Operational",
+      "degraded": "Degraded",
+      "down": "Down",
+      "unknown": "Unknown"
+    },
+    "empty": "No services found with these filters.",
+    "uptimeUnknown": "—",
+    "viewService": "View details of {name}",
+    "viewServiceText": "View"
   }
 }
