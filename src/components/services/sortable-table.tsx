@@ -13,7 +13,7 @@ import {
 } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ArrowUpDown, ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { parseAsString, useQueryState } from "nuqs";
+import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs";
 import { useMemo } from "react";
 import {
   Table,
@@ -30,6 +30,8 @@ import { cn } from "@/lib/utils";
 export interface SortableServicesTableProps {
   services: ServiceWithStatus[];
   className?: string;
+  defaultSortId?: string;
+  defaultSortDir?: "asc" | "desc";
 }
 
 const STATUS_BADGE: Record<CurrentStatus, string> = {
@@ -44,17 +46,29 @@ function formatUptime(pct: number | null, unknown: string): string {
   return `${pct.toFixed(1)}%`;
 }
 
-export function SortableServicesTable({ services, className }: SortableServicesTableProps) {
+export function SortableServicesTable({
+  services,
+  className,
+  defaultSortId = "name",
+  defaultSortDir = "asc",
+}: SortableServicesTableProps) {
   const t = useTranslations("SortableServicesTable");
   const tCat = useTranslations("Categories");
 
-  const [sortCol, setSortCol] = useQueryState("sort", parseAsString.withDefault("name"));
-  const [sortDir, setSortDir] = useQueryState("dir", parseAsString.withDefault("asc"));
+  const [sortCol, setSortCol] = useQueryState("sort", parseAsString.withDefault(defaultSortId));
+  const [sortDir, setSortDir] = useQueryState("dir", parseAsString.withDefault(defaultSortDir));
   const [categoryFilter, setCategoryFilter] = useQueryState(
     "category",
-    parseAsString.withDefault(""),
+    parseAsArrayOf(parseAsString).withDefault([]),
   );
   const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
+  const [sphereFilter, setSphereFilter] = useQueryState("sphere", parseAsString.withDefault(""));
+
+  // Pre-filter by sphere before passing to TanStack Table
+  const sphereFiltered = useMemo(
+    () => (sphereFilter ? services.filter((s) => s.sphere === sphereFilter) : services),
+    [services, sphereFilter],
+  );
 
   const sorting: SortingState = useMemo(
     () => [{ id: sortCol, desc: sortDir === "desc" }],
@@ -63,7 +77,7 @@ export function SortableServicesTable({ services, className }: SortableServicesT
 
   const columnFilters: ColumnFiltersState = useMemo(
     () => [
-      ...(categoryFilter ? [{ id: "category", value: categoryFilter }] : []),
+      ...(categoryFilter.length > 0 ? [{ id: "category", value: categoryFilter }] : []),
       ...(statusFilter ? [{ id: "status", value: statusFilter }] : []),
     ],
     [categoryFilter, statusFilter],
@@ -76,14 +90,6 @@ export function SortableServicesTable({ services, className }: SortableServicesT
       void setSortCol(first.id);
       void setSortDir(first.desc ? "desc" : "asc");
     }
-  };
-
-  const onColumnFiltersChange: OnChangeFn<ColumnFiltersState> = (updater) => {
-    const next = typeof updater === "function" ? updater(columnFilters) : updater;
-    const cat = next.find((f) => f.id === "category");
-    const st = next.find((f) => f.id === "status");
-    void setCategoryFilter((cat?.value as string | undefined) ?? null);
-    void setStatusFilter((st?.value as string | undefined) ?? null);
   };
 
   const columns: ColumnDef<ServiceWithStatus>[] = useMemo(
@@ -106,7 +112,10 @@ export function SortableServicesTable({ services, className }: SortableServicesT
         header: t("columns.category"),
         enableSorting: true,
         enableColumnFilter: true,
-        filterFn: "equals",
+        filterFn: (row, columnId, filterValue: string[]) => {
+          if (!filterValue.length) return true;
+          return filterValue.includes(row.getValue<string>(columnId));
+        },
         cell: ({ getValue }) => {
           const cat = getValue<string>();
           const label = (() => {
@@ -147,21 +156,21 @@ export function SortableServicesTable({ services, className }: SortableServicesT
   );
 
   const table = useReactTable({
-    data: services,
+    data: sphereFiltered,
     columns,
     state: { sorting, columnFilters },
     onSortingChange,
-    onColumnFiltersChange,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
   });
 
-  const categories = useMemo(
+  const allCategories = useMemo(
     () => [...new Set(services.map((s) => s.category))].sort(),
     [services],
   );
 
+  const spheres: Array<"federal" | "estadual" | "municipal"> = ["federal", "estadual", "municipal"];
   const statuses: CurrentStatus[] = ["operational", "degraded", "down", "unknown"];
 
   const rows = table.getRowModel().rows;
@@ -169,18 +178,14 @@ export function SortableServicesTable({ services, className }: SortableServicesT
   return (
     <div className={cn("flex flex-col gap-4", className)} data-slot="sortable-services-table">
       {/* Filter bar */}
-      <div className="flex flex-wrap gap-3">
-        <label className="flex flex-col gap-1 text-sm">
-          <span className="text-xs font-medium text-muted-foreground">
+      <div className="flex flex-col gap-4">
+        {/* Category multi-select checkboxes */}
+        <fieldset className="flex flex-col gap-1.5">
+          <legend className="text-xs font-medium text-muted-foreground">
             {t("filter.categoryLabel")}
-          </span>
-          <select
-            value={categoryFilter}
-            onChange={(e) => void setCategoryFilter(e.target.value || null)}
-            className="rounded-md border border-input bg-background px-3 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <option value="">{t("filter.allCategories")}</option>
-            {categories.map((cat) => {
+          </legend>
+          <div className="flex flex-wrap gap-2">
+            {allCategories.map((cat) => {
               const label = (() => {
                 try {
                   return tCat(cat as Parameters<typeof tCat>[0]);
@@ -188,32 +193,74 @@ export function SortableServicesTable({ services, className }: SortableServicesT
                   return cat;
                 }
               })();
+              const checked = categoryFilter.includes(cat);
               return (
-                <option key={cat} value={cat}>
+                <label
+                  key={cat}
+                  className={cn(
+                    "inline-flex cursor-pointer items-center rounded-full border px-3 py-1 text-xs font-medium transition-colors",
+                    checked
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-input bg-background hover:bg-muted",
+                  )}
+                >
+                  <input
+                    type="checkbox"
+                    className="sr-only"
+                    checked={checked}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        void setCategoryFilter([...categoryFilter, cat]);
+                      } else {
+                        void setCategoryFilter(categoryFilter.filter((c) => c !== cat));
+                      }
+                    }}
+                  />
                   {label}
-                </option>
+                </label>
               );
             })}
-          </select>
-        </label>
+          </div>
+        </fieldset>
 
-        <label className="flex flex-col gap-1 text-sm">
-          <span className="text-xs font-medium text-muted-foreground">
-            {t("filter.statusLabel")}
-          </span>
-          <select
-            value={statusFilter}
-            onChange={(e) => void setStatusFilter(e.target.value || null)}
-            className="rounded-md border border-input bg-background px-3 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <option value="">{t("filter.allStatuses")}</option>
-            {statuses.map((st) => (
-              <option key={st} value={st}>
-                {t(`status.${st}`)}
-              </option>
-            ))}
-          </select>
-        </label>
+        {/* Status and Sphere selects */}
+        <div className="flex flex-wrap gap-3">
+          <label className="flex flex-col gap-1 text-sm">
+            <span className="text-xs font-medium text-muted-foreground">
+              {t("filter.statusLabel")}
+            </span>
+            <select
+              value={statusFilter}
+              onChange={(e) => void setStatusFilter(e.target.value || null)}
+              className="rounded-md border border-input bg-background px-3 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <option value="">{t("filter.allStatuses")}</option>
+              {statuses.map((st) => (
+                <option key={st} value={st}>
+                  {t(`status.${st}`)}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="flex flex-col gap-1 text-sm">
+            <span className="text-xs font-medium text-muted-foreground">
+              {t("filter.sphereLabel")}
+            </span>
+            <select
+              value={sphereFilter}
+              onChange={(e) => void setSphereFilter(e.target.value || null)}
+              className="rounded-md border border-input bg-background px-3 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <option value="">{t("filter.allSpheres")}</option>
+              {spheres.map((sp) => (
+                <option key={sp} value={sp}>
+                  {t(`sphere.${sp}`)}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
       </div>
 
       {rows.length === 0 ? (
