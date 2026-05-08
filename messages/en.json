@@ -281,7 +281,8 @@
     "metaTitle": "Ranking — StatusBrasil",
     "metaDescription": "Availability ranking of Brazilian government services. Worst services by uptime first.",
     "heading": "Availability ranking",
-    "tagline": "All monitored services, from worst uptime to best."
+    "tagline": "All monitored services, from worst uptime to best.",
+    "exportCsv": "Export CSV"
   },
   "RankingOgImage": {
     "brand": "StatusBrasil",
