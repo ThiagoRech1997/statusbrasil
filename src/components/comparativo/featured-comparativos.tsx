@@ -1,9 +1,9 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import {
+  COMPARATIVOS,
   type Comparativo,
   type ComparativoId,
-  COMPARATIVOS,
   comparativoQueryString,
 } from "@/lib/editorial/comparativos";
 
@@ -12,9 +12,7 @@ export interface FeaturedComparativosProps {
   comparativos?: readonly Comparativo[];
 }
 
-export function FeaturedComparativos({
-  comparativos = COMPARATIVOS,
-}: FeaturedComparativosProps) {
+export function FeaturedComparativos({ comparativos = COMPARATIVOS }: FeaturedComparativosProps) {
   const t = useTranslations("Comparativo");
   const headingId = "featured-comparativos-heading";
 
@@ -25,7 +23,10 @@ export function FeaturedComparativos({
       className="flex flex-col gap-5"
     >
       <header className="flex flex-col gap-1">
-        <h2 id={headingId} className="font-heading text-xl font-semibold tracking-tight sm:text-2xl">
+        <h2
+          id={headingId}
+          className="font-heading text-xl font-semibold tracking-tight sm:text-2xl"
+        >
           {t("featuredHeading")}
         </h2>
         <p className="max-w-2xl text-sm text-muted-foreground">{t("featuredIntro")}</p>
@@ -42,7 +43,9 @@ export function FeaturedComparativos({
 
 function FeaturedCard({ comparativo }: { comparativo: Comparativo }) {
   const t = useTranslations("Comparativo");
-  const tFeatured = useTranslations(`Comparativo.featured.${comparativo.id satisfies ComparativoId}`);
+  const tFeatured = useTranslations(
+    `Comparativo.featured.${comparativo.id satisfies ComparativoId}`,
+  );
 
   const title = tFeatured("title");
   const angle = tFeatured("angle");
