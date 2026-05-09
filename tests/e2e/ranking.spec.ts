@@ -11,7 +11,8 @@ test.describe("ranking", () => {
     await statusBtn.click();
 
     await expect(page).toHaveURL(/sort=status/);
-    await expect(page).toHaveURL(/dir=asc/);
+    // nuqs strips the default dir value ("asc") from the URL — verify ascending sort via aria-sort instead
+    await expect(page.locator('th[aria-sort="ascending"]')).toBeVisible();
   });
 
   test("URL sort state is preserved across a page reload", async ({ page }) => {
