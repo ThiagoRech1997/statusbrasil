@@ -2,6 +2,10 @@ import { ImageResponse } from "next/og";
 import { hasLocale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { routing } from "@/i18n/routing";
+import {
+  MIN_COMPARATIVO_SERVICES as MIN_SERVICES,
+  parseServicesParam,
+} from "@/lib/comparativo/parse-services-param";
 import { db } from "@/lib/db";
 import { getServiceWithStatusBySlug } from "@/lib/queries/services";
 import { getBatchRollingUptimeSummary } from "@/lib/queries/uptime";
@@ -12,8 +16,6 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 const CACHE_HEADER = "public, s-maxage=3600, stale-while-revalidate=86400";
-const MAX_SERVICES = 4;
-const MIN_SERVICES = 2;
 
 interface ServiceData {
   slug: string;
@@ -35,13 +37,7 @@ export default async function Image({
   const locale = hasLocale(routing.locales, requested) ? requested : routing.defaultLocale;
   const t = await getTranslations({ locale, namespace: "ComparativoOgImage" });
 
-  const slugs = rawServices
-    ? rawServices
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean)
-        .slice(0, MAX_SERVICES)
-    : [];
+  const slugs = parseServicesParam(rawServices);
 
   if (slugs.length < MIN_SERVICES) {
     return new ImageResponse(
