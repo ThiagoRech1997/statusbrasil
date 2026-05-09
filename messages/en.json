@@ -291,6 +291,13 @@
     "uptimeLabel": "30d uptime",
     "emptyLabel": "No services with sufficient data"
   },
+  "ComparativoOgImage": {
+    "brand": "StatusBrasil",
+    "title": "Availability Comparison",
+    "tagline": "Brazilian government services availability",
+    "uptimeLabel": "30d uptime",
+    "noData": "No data"
+  },
   "SortableServicesTable": {
     "ariaLabel": "Government services",
     "columns": {
