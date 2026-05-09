@@ -63,15 +63,11 @@ export function ServicePicker({ allServices }: ServicePickerProps) {
   }, []);
 
   return (
-    <div
-      ref={containerRef}
-      data-slot="service-picker"
-      className="flex flex-col gap-2"
-      aria-label={t("picker.label")}
-    >
+    <div ref={containerRef} data-slot="service-picker" className="flex flex-col gap-2">
       {/* Selected chips */}
       {selectedServices.length > 0 && (
-        <div className="flex flex-wrap gap-2" role="group" aria-label={t("picker.label")}>
+        <fieldset className="flex flex-wrap gap-2 border-0 p-0 m-0">
+          <legend className="sr-only">{t("picker.label")}</legend>
           {selectedServices.map((svc, idx) => {
             const color = SERVICE_COLORS[idx] ?? SERVICE_COLORS[0];
             return (
@@ -96,7 +92,7 @@ export function ServicePicker({ allServices }: ServicePickerProps) {
               </span>
             );
           })}
-        </div>
+        </fieldset>
       )}
 
       {/* Search input + dropdown */}
@@ -113,7 +109,8 @@ export function ServicePicker({ allServices }: ServicePickerProps) {
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"
-            aria-hidden
+            aria-hidden="true"
+            focusable="false"
             className="shrink-0 text-muted-foreground"
           >
             <circle cx="11" cy="11" r="8" />
@@ -153,15 +150,13 @@ export function ServicePicker({ allServices }: ServicePickerProps) {
         {open && !atMax && (
           <ul
             id={listId}
-            role="listbox"
-            aria-label={t("picker.label")}
             className="absolute top-full z-20 mt-1 max-h-56 w-full overflow-y-auto rounded-xl border border-border bg-popover shadow-md"
           >
             {filteredOptions.length === 0 ? (
               <li className="px-3 py-2.5 text-sm text-muted-foreground">{t("picker.noResults")}</li>
             ) : (
               filteredOptions.map((svc) => (
-                <li key={svc.slug} role="option" aria-selected={false}>
+                <li key={svc.slug}>
                   <button
                     type="button"
                     className="flex w-full flex-col gap-0.5 px-3 py-2.5 text-left hover:bg-muted/60 focus-visible:bg-muted/60 focus-visible:outline-none"

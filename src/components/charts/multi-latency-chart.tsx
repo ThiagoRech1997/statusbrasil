@@ -8,7 +8,7 @@ import { type PointerEvent as ReactPointerEvent, useMemo, useRef, useState } fro
 import { cn } from "@/lib/utils";
 import { LATENCY_WINDOWS, type LatencySample, type LatencyWindow } from "./latency-chart";
 
-export { type LatencySample, type LatencyWindow };
+export type { LatencySample, LatencyWindow };
 
 // Vibrant, work on both light (#fff) and dark (~#1a1a1a) backgrounds
 const SERIES_COLORS = [
@@ -110,8 +110,7 @@ export function MultiLatencyChart({
       : services.map(() => null);
 
   const firstActiveSample = nearestByService.find((s) => s != null) ?? null;
-  const cursorX =
-    firstActiveSample && xScale ? xScale(firstActiveSample.timestamp) : null;
+  const cursorX = firstActiveSample && xScale ? xScale(firstActiveSample.timestamp) : null;
 
   const onPointerMove = (e: ReactPointerEvent<SVGRectElement>) => {
     if (!xScale) return;
@@ -140,11 +139,8 @@ export function MultiLatencyChart({
 
   return (
     <div className={cn("flex flex-col gap-3", className)} data-slot="multi-latency-chart">
-      <div
-        role="group"
-        aria-label={t("windowGroupLabel")}
-        className="inline-flex w-fit rounded-lg border border-border bg-card p-0.5 text-xs"
-      >
+      <fieldset className="inline-flex w-fit rounded-lg border border-border bg-card p-0.5 text-xs">
+        <legend className="sr-only">{t("windowGroupLabel")}</legend>
         {LATENCY_WINDOWS.map((w) => {
           const isActive = w === activeWindow;
           return (
@@ -165,7 +161,7 @@ export function MultiLatencyChart({
             </button>
           );
         })}
-      </div>
+      </fieldset>
 
       <div className="overflow-x-auto [-webkit-overflow-scrolling:touch] [scrollbar-width:thin]">
         <div className="relative inline-block" style={{ width: WIDTH }}>
@@ -263,7 +259,6 @@ export function MultiLatencyChart({
                   </g>
                 )}
 
-                {/* biome-ignore lint/a11y/useSemanticElements: SVG rect used as chart overlay; role="img" on parent svg covers the interactive region. */}
                 <rect
                   ref={overlayRef}
                   x={0}

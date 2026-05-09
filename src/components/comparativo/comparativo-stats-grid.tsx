@@ -36,11 +36,6 @@ export async function ComparativoStatsGrid({ services }: ComparativoStatsGridPro
   const t = await getTranslations("Comparativo");
   const locale = await getLocale();
 
-  const colCount = services.length;
-  const gridStyle = {
-    gridTemplateColumns: `auto repeat(${colCount}, 1fr)`,
-  } as React.CSSProperties;
-
   const noData = t("stats.noData");
 
   const rows: { label: string; render: (svc: ServiceStatsRow) => React.ReactNode }[] = [
@@ -56,9 +51,7 @@ export async function ComparativoStatsGrid({ services }: ComparativoStatsGridPro
     },
     {
       label: t("stats.uptime30d"),
-      render: (svc) => (
-        <span className="tabular-nums">{formatPct(svc.uptime30dPct, noData)}</span>
-      ),
+      render: (svc) => <span className="tabular-nums">{formatPct(svc.uptime30dPct, noData)}</span>,
     },
     {
       label: t("stats.currentMonthUptime"),
@@ -117,61 +110,56 @@ export async function ComparativoStatsGrid({ services }: ComparativoStatsGridPro
         })}
       </div>
 
-      {/* Desktop: side-by-side grid */}
-      <div
-        className="hidden min-w-max sm:grid"
-        style={gridStyle}
-        role="table"
-        aria-label={t("statsHeading")}
-      >
-        {/* Header row */}
-        <div role="row" className="contents">
-          <div role="columnheader" className="p-3" />
-          {services.map((svc, idx) => {
-            const color = SERIES_COLORS[idx] ?? SERIES_COLORS[0];
-            return (
-              <div
-                key={svc.slug}
-                role="columnheader"
-                className="border-b border-border p-3 pb-4"
-              >
-                <div className="flex items-start gap-2">
-                  <span
-                    aria-hidden
-                    className="mt-1 inline-block size-3 shrink-0 rounded-full"
-                    style={{ backgroundColor: color }}
-                  />
-                  <div>
-                    <div className="font-medium leading-snug">{svc.name}</div>
-                    <div className="text-xs text-muted-foreground">{svc.agency}</div>
+      {/* Desktop: semantic table */}
+      <table className="hidden min-w-max sm:table" aria-label={t("statsHeading")}>
+        <thead>
+          <tr>
+            <th scope="col" className="p-3" />
+            {services.map((svc, idx) => {
+              const color = SERIES_COLORS[idx] ?? SERIES_COLORS[0];
+              return (
+                <th
+                  key={svc.slug}
+                  scope="col"
+                  className="border-b border-border p-3 pb-4 text-left font-medium"
+                >
+                  <div className="flex items-start gap-2">
+                    <span
+                      aria-hidden
+                      className="mt-1 inline-block size-3 shrink-0 rounded-full"
+                      style={{ backgroundColor: color }}
+                    />
+                    <div>
+                      <div className="font-medium leading-snug">{svc.name}</div>
+                      <div className="text-xs font-normal text-muted-foreground">{svc.agency}</div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Metric rows */}
-        {rows.map((row, rowIdx) => (
-          <div key={row.label} role="row" className="contents">
-            <div
-              role="rowheader"
-              className={`flex items-center py-3 pr-6 text-sm text-muted-foreground ${rowIdx > 0 ? "border-t border-border" : ""}`}
-            >
-              {row.label}
-            </div>
-            {services.map((svc) => (
-              <div
-                key={svc.slug}
-                role="cell"
-                className={`flex items-center p-3 text-sm ${rowIdx > 0 ? "border-t border-border" : ""}`}
+                </th>
+              );
+            })}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, rowIdx) => (
+            <tr key={row.label}>
+              <th
+                scope="row"
+                className={`py-3 pr-6 text-left text-sm font-normal text-muted-foreground${rowIdx > 0 ? " border-t border-border" : ""}`}
               >
-                {row.render(svc)}
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
+                {row.label}
+              </th>
+              {services.map((svc) => (
+                <td
+                  key={svc.slug}
+                  className={`p-3 text-sm${rowIdx > 0 ? " border-t border-border" : ""}`}
+                >
+                  {row.render(svc)}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
