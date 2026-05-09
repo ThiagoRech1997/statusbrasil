@@ -1,23 +1,23 @@
+import { AlertCircle } from "lucide-react";
 import type { Metadata } from "next";
 import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { AlertCircle } from "lucide-react";
+import { MultiLatencyChart, type MultiLatencyEntry } from "@/components/charts/multi-latency-chart";
 import {
   ComparativoStatsGrid,
   type ServiceStatsRow,
 } from "@/components/comparativo/comparativo-stats-grid";
 import { FeaturedComparativos } from "@/components/comparativo/featured-comparativos";
 import { ServicePicker } from "@/components/comparativo/service-picker";
-import { MultiLatencyChart, type MultiLatencyEntry } from "@/components/charts/multi-latency-chart";
 import { routing } from "@/i18n/routing";
 import { db } from "@/lib/db";
+import { getLatencyByWindow } from "@/lib/queries/service-detail";
+import { getServiceWithStatusBySlug, listServices } from "@/lib/queries/services";
 import {
-  getBatchRollingUptimeSummary,
   getBatchIncidentCount30d,
   getBatchMonthUptime,
+  getBatchRollingUptimeSummary,
 } from "@/lib/queries/uptime";
-import { getLatencyByWindow } from "@/lib/queries/service-detail";
-import { listServices, getServiceWithStatusBySlug } from "@/lib/queries/services";
 
 export const revalidate = 60;
 
