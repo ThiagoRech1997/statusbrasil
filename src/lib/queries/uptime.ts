@@ -378,3 +378,72 @@ export async function getRolling30dSummary(
 
   return { uptimePct, totalChecks, failedChecks, mttrSeconds };
 }
+
+export async function getBatchIncidentCount30d(
+  db: DB,
+  slugs: string[],
+  opts: { now?: Date } = {},
+): Promise<Map<string, number>> {
+  if (slugs.length === 0) return new Map();
+  const now = opts.now ?? new Date();
+  const start = new Date(now.getTime() - DAYS_30 * HOURS_PER_DAY * MS_PER_HOUR);
+
+  const rows = await db
+    .select({
+      serviceSlug: incidents.serviceSlug,
+      total: count(incidents.id),
+    })
+    .from(incidents)
+    .where(
+      and(
+        inArray(incidents.serviceSlug, slugs),
+        gte(incidents.startedAt, start),
+        lte(incidents.startedAt, now),
+      ),
+    )
+    .groupBy(incidents.serviceSlug);
+
+  const result = new Map<string, number>();
+  for (const slug of slugs) result.set(slug, 0);
+  for (const row of rows) {
+    result.set(row.serviceSlug, row.total ?? 0);
+  }
+  return result;
+}
+
+export async function getBatchMonthUptime(
+  db: DB,
+  slugs: string[],
+  opts: { now?: Date } = {},
+): Promise<Map<string, number | null>> {
+  if (slugs.length === 0) return new Map();
+  const now = opts.now ?? new Date();
+  const monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1, 0, 0, 0));
+  const monthEnd = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1, 0, 0, 0));
+
+  const rows = await db
+    .select({
+      serviceSlug: serviceUptimeHourly.serviceSlug,
+      totalChecks: sum(serviceUptimeHourly.totalChecks).mapWith(Number),
+      failedChecks: sum(serviceUptimeHourly.failedChecks).mapWith(Number),
+    })
+    .from(serviceUptimeHourly)
+    .where(
+      and(
+        inArray(serviceUptimeHourly.serviceSlug, slugs),
+        gte(serviceUptimeHourly.hour, monthStart),
+        lt(serviceUptimeHourly.hour, monthEnd),
+      ),
+    )
+    .groupBy(serviceUptimeHourly.serviceSlug);
+
+  const result = new Map<string, number | null>();
+  for (const slug of slugs) result.set(slug, null);
+  for (const row of rows) {
+    const total = row.totalChecks ?? 0;
+    if (total === 0) continue;
+    const failed = row.failedChecks ?? 0;
+    result.set(row.serviceSlug, ((total - failed) / total) * 100);
+  }
+  return result;
+}
