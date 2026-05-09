@@ -30,15 +30,23 @@ function siteUrl(): string {
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ services?: string }>;
 }): Promise<Metadata> {
   const { locale: requested } = await params;
+  const { services: rawServices } = await searchParams;
   const locale = hasLocale(routing.locales, requested) ? requested : routing.defaultLocale;
 
   const t = await getTranslations({ locale, namespace: "Comparativo" });
   const url = siteUrl();
   const canonical = `${url}/${locale}/comparativo`;
+
+  const ogImageUrl =
+    rawServices && rawServices.trim().length > 0
+      ? `${url}/${locale}/comparativo/opengraph-image?services=${encodeURIComponent(rawServices)}`
+      : `${url}/${locale}/comparativo/opengraph-image`;
 
   return {
     title: t("metaTitle"),
@@ -53,11 +61,13 @@ export async function generateMetadata({
       url: canonical,
       type: "website",
       locale,
+      images: [{ url: ogImageUrl, width: 1200, height: 630 }],
     },
     twitter: {
       card: "summary_large_image",
       title: t("metaTitle"),
       description: t("metaDescription"),
+      images: [ogImageUrl],
     },
   };
 }

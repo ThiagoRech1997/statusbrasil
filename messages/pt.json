@@ -327,6 +327,13 @@
     "uptimeLabel": "Uptime 30d",
     "emptyLabel": "Nenhum serviço com dados suficientes"
   },
+  "ComparativoOgImage": {
+    "brand": "StatusBrasil",
+    "title": "Comparativo de disponibilidade",
+    "tagline": "Disponibilidade dos serviços do governo brasileiro",
+    "uptimeLabel": "Uptime 30d",
+    "noData": "Sem dados"
+  },
   "Ranking": {
     "metaTitle": "Ranking — StatusBrasil",
     "metaDescription": "Ranking de disponibilidade dos serviços do governo brasileiro. Piores serviços por uptime em primeiro.",
