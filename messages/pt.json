@@ -164,6 +164,7 @@
   "IncidentsTable": {
     "ariaLabel": "Incidentes",
     "columns": {
+      "service": "Serviço",
       "startedAt": "Início",
       "duration": "Duração",
       "statusCode": "Código",
@@ -407,6 +408,93 @@
     "publicEndpoints": {
       "heading": "Endpoints monitorados são públicos",
       "body": "Monitoramos apenas endpoints públicos e não-autenticados. Nenhuma credencial é armazenada ou utilizada nos checks."
+    }
+  },
+  "Incidentes": {
+    "metaTitle": "Incidentes — StatusBrasil",
+    "metaDescription": "Timeline dos últimos 90 dias de incidentes nos serviços do governo brasileiro. Filtre por serviço e severidade.",
+    "heading": "Incidentes",
+    "tagline": "Registros de indisponibilidade dos últimos 90 dias, do mais recente ao mais antigo.",
+    "filters": {
+      "ariaLabel": "Filtros de incidentes",
+      "service": "Serviço",
+      "allServices": "Todos os serviços",
+      "severity": "Severidade",
+      "allSeverities": "Todas as severidades",
+      "severityPartial": "Parcial",
+      "severityTotal": "Total",
+      "from": "De",
+      "to": "Até",
+      "apply": "Filtrar",
+      "clear": "Limpar filtros"
+    }
+  },
+  "Metodologia": {
+    "metaTitle": "Metodologia — StatusBrasil",
+    "metaDescription": "Como monitoramos os serviços do governo, calculamos uptime, definimos SLA e classificamos incidentes.",
+    "heading": "Metodologia",
+    "tagline": "Como coletamos, calculamos e classificamos os dados de disponibilidade.",
+    "monitoring": {
+      "heading": "Como monitoramos",
+      "body": "Gatus verifica cada serviço cadastrado a cada 60 segundos com uma requisição HEAD ou GET ao endpoint público. Cada check registra código de resposta HTTP, latência de ida e volta e erro de conexão, quando houver.",
+      "failDefinition": "Uma verificação é considerada falha quando o endpoint retorna status 4xx/5xx ou não responde dentro de 10 segundos.",
+      "tool": "Ferramenta",
+      "toolValue": "Gatus",
+      "frequency": "Frequência",
+      "frequencyValue": "60 segundos por serviço",
+      "checkType": "Tipo de check",
+      "checkTypeValue": "HTTP/HTTPS — HEAD ou GET",
+      "timeout": "Timeout",
+      "timeoutValue": "10 segundos por tentativa",
+      "failCriteria": "Critério de falha",
+      "failCriteriaValue": "Status 4xx/5xx ou timeout"
+    },
+    "uptime": {
+      "heading": "Como calculamos o uptime",
+      "formula": "Uptime = (1 − verificações falhas ÷ verificações totais) × 100",
+      "body": "O cálculo é agregado por hora dentro da janela selecionada (1h, 24h, 7 dias, 30 dias). Períodos sem dados — serviço ainda sem histórico ou monitor temporariamente offline — são excluídos do denominador e não contam como queda.",
+      "windowNote": "A janela de 30 dias é a referência para SLA mensal e ranking de disponibilidade."
+    },
+    "sla": {
+      "heading": "SLA por serviço",
+      "body": "O target de SLA de cada serviço vem do contrato de serviço público publicado pelo órgão responsável: Portaria, Nota Técnica ou Plano de Contratação Anual. Quando o órgão não publica uma meta, o campo fica vazio — não inventamos um target.",
+      "compliance": "Cumprimento ou descumprimento da meta é calculado automaticamente ao final de cada mês calendário."
+    },
+    "severity": {
+      "heading": "Parcial vs. total: como classificamos",
+      "body": "Cada incidente recebe uma classificação com base no que o monitor observou:",
+      "partialLabel": "Parcial",
+      "partialDef": "O endpoint respondeu, mas com código de erro (ex.: 503 Service Unavailable). Indica degradação ou sobrecarga.",
+      "totalLabel": "Total",
+      "totalDef": "O endpoint não respondeu de forma alguma — timeout, erro de conexão ou falha de DNS. O serviço estava completamente inacessível a partir do ponto de monitoramento."
+    },
+    "badge": {
+      "heading": "Badge de status",
+      "body": "Embutir o badge de uptime de qualquer serviço no seu README ou site. Substitua {slug} pelo identificador do serviço, visível na URL da página de detalhes.",
+      "htmlLabel": "HTML",
+      "markdownLabel": "Markdown",
+      "cacheNote": "O badge exibe o uptime dos últimos 30 dias e é atualizado a cada 24 horas."
+    },
+    "disclaimer": {
+      "heading": "Aviso de limitação metodológica",
+      "body": "Indisponibilidade reportada pode refletir problemas de rota entre o monitor e o serviço, e não necessariamente queda do serviço para todos os usuários. Fatores como regras de firewall, CDN, geo-restrição ou falha pontual na infraestrutura do monitor podem causar falha no check sem que o serviço esteja fora do ar."
+    },
+    "limitations": {
+      "heading": "Limitações conhecidas",
+      "item1": "Monitoramento a partir de um único ponto de saída (São Paulo, Brasil). Um serviço acessível de outras regiões ou ISPs pode aparecer como indisponível.",
+      "item2": "Serviços que exigem autenticação, CAPTCHA ou aplicam rate limiting agressivo podem falhar nos checks sem indisponibilidade real.",
+      "item3": "Janelas de manutenção programadas não são excluídas automaticamente do cálculo de uptime e afetam as métricas.",
+      "item4": "Histórico disponível somente a partir da data de cadastro de cada serviço; dados anteriores não são retroativos.",
+      "item5": "Falhas muito curtas (menos de 60 segundos) podem não ser capturadas na frequência de check atual."
+    },
+    "links": {
+      "heading": "Código, dados e documentação",
+      "repoLabel": "Repositório público",
+      "repoDesc": "Código-fonte, configuração dos monitores e histórico de decisões técnicas (ADRs).",
+      "apiLabel": "API pública — OpenAPI 3.1",
+      "apiDesc": "Documentação interativa de todos os endpoints de dados.",
+      "privacyLabel": "Política de privacidade",
+      "privacyDesc": "Dados coletados, retenção e seus direitos sob a LGPD."
     }
   }
 }

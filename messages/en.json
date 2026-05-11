@@ -164,6 +164,7 @@
   "IncidentsTable": {
     "ariaLabel": "Incidents",
     "columns": {
+      "service": "Service",
       "startedAt": "Started",
       "duration": "Duration",
       "statusCode": "Code",
@@ -407,6 +408,93 @@
     "publicEndpoints": {
       "heading": "Monitored endpoints are public",
       "body": "We only monitor public, unauthenticated endpoints. No credentials are stored or used in checks."
+    }
+  },
+  "Incidentes": {
+    "metaTitle": "Incidents — StatusBrasil",
+    "metaDescription": "90-day incident timeline for Brazilian government services. Filter by service and severity.",
+    "heading": "Incidents",
+    "tagline": "Availability incidents from the last 90 days, newest first.",
+    "filters": {
+      "ariaLabel": "Incident filters",
+      "service": "Service",
+      "allServices": "All services",
+      "severity": "Severity",
+      "allSeverities": "All severities",
+      "severityPartial": "Partial",
+      "severityTotal": "Total",
+      "from": "From",
+      "to": "To",
+      "apply": "Filter",
+      "clear": "Clear filters"
+    }
+  },
+  "Metodologia": {
+    "metaTitle": "Methodology — StatusBrasil",
+    "metaDescription": "How we monitor government services, calculate uptime, define SLA targets, and classify incidents.",
+    "heading": "Methodology",
+    "tagline": "How we collect, calculate, and classify availability data.",
+    "monitoring": {
+      "heading": "How we monitor",
+      "body": "Gatus checks each registered service every 60 seconds with a HEAD or GET request to the service's public endpoint. Each check records the HTTP response code, round-trip latency, and any connection error.",
+      "failDefinition": "A check is considered failed when the endpoint returns a 4xx/5xx status or does not respond within 10 seconds.",
+      "tool": "Tool",
+      "toolValue": "Gatus",
+      "frequency": "Frequency",
+      "frequencyValue": "60 seconds per service",
+      "checkType": "Check type",
+      "checkTypeValue": "HTTP/HTTPS — HEAD or GET",
+      "timeout": "Timeout",
+      "timeoutValue": "10 seconds per attempt",
+      "failCriteria": "Failure criteria",
+      "failCriteriaValue": "4xx/5xx status or timeout"
+    },
+    "uptime": {
+      "heading": "How we calculate uptime",
+      "formula": "Uptime = (1 − failed checks ÷ total checks) × 100",
+      "body": "Calculated hourly within the selected window (1h, 24h, 7 days, 30 days). Periods with no data — services without history or monitor temporarily offline — are excluded from the denominator and do not count as downtime.",
+      "windowNote": "The 30-day window is the reference for monthly SLA and the availability ranking."
+    },
+    "sla": {
+      "heading": "SLA per service",
+      "body": "Each service's SLA target comes from the public service contract published by the responsible agency: an Ordinance, Technical Note, or Annual Procurement Plan. When the agency does not publish a target, the field is left blank — we do not invent one.",
+      "compliance": "Compliance or non-compliance is calculated automatically at the end of each calendar month."
+    },
+    "severity": {
+      "heading": "Partial vs. total: how we classify",
+      "body": "Each incident is classified based on what the monitor observed:",
+      "partialLabel": "Partial",
+      "partialDef": "The endpoint responded but with an error code (e.g. 503 Service Unavailable). Indicates degradation or overload.",
+      "totalLabel": "Total",
+      "totalDef": "The endpoint did not respond at all — timeout, connection error, or DNS failure. The service was completely unreachable from the monitoring point."
+    },
+    "badge": {
+      "heading": "Status badge",
+      "body": "Embed the uptime badge for any service in your README or website. Replace {slug} with the service identifier, visible in the details page URL.",
+      "htmlLabel": "HTML",
+      "markdownLabel": "Markdown",
+      "cacheNote": "The badge shows the last 30 days of uptime and is updated every 24 hours."
+    },
+    "disclaimer": {
+      "heading": "Methodological disclaimer",
+      "body": "Reported unavailability may reflect routing issues between the monitor and the service, not necessarily a full outage for all users. Factors such as firewall rules, CDN configuration, geo-restrictions, or a temporary failure in the monitoring infrastructure can cause a check to fail without the service actually being down."
+    },
+    "limitations": {
+      "heading": "Known limitations",
+      "item1": "Monitoring from a single exit point (São Paulo, Brazil). A service reachable from other regions or ISPs may appear as unavailable.",
+      "item2": "Services that require authentication, CAPTCHA, or aggressive rate limiting may fail checks without real unavailability.",
+      "item3": "Scheduled maintenance windows are not automatically excluded from uptime calculations and will affect metrics.",
+      "item4": "History is only available from each service's registration date; prior data is not retroactive.",
+      "item5": "Very short outages (under 60 seconds) may not be captured at the current check frequency."
+    },
+    "links": {
+      "heading": "Code, data, and documentation",
+      "repoLabel": "Public repository",
+      "repoDesc": "Source code, monitor configuration, and technical decision records (ADRs).",
+      "apiLabel": "Public API — OpenAPI 3.1",
+      "apiDesc": "Interactive documentation for all data endpoints.",
+      "privacyLabel": "Privacy policy",
+      "privacyDesc": "Data collected, retention, and your rights under Brazil's LGPD."
     }
   }
 }
