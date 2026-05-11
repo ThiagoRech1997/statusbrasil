@@ -1,4 +1,4 @@
-import { type Page, expect, test } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
 import { getViolations, injectAxe } from "axe-playwright";
 
 type Theme = "light" | "dark";
