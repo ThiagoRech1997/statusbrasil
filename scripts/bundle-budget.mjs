@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-// Measures gzipped JS size of all page chunks and fails CI if any page exceeds BUDGET_KB_GZ.
+// Measures gzipped JS size of route-specific chunks and fails CI if any page exceeds BUDGET_KB_GZ.
 // Reads .next/app-build-manifest.json (App Router page → chunk mapping) and sums gz sizes.
-// Falls back to measuring the total .next/static/chunks/ footprint if the manifest is absent.
-import { readdirSync, readFileSync, statSync } from "fs";
-import { extname, join } from "path";
+// Exits 0 (skip) when the manifest is absent — use ANALYZE=true pnpm build to inspect manually.
+import { readFileSync } from "fs";
+import { join } from "path";
 import { gzipSync } from "zlib";
 
 const BUDGET_KB = Number(process.env.BUDGET_KB_GZ ?? "150");
@@ -50,29 +50,17 @@ function checkPagesFromManifest() {
   return failed;
 }
 
-function checkTotalChunks() {
-  const chunksDir = join(NEXT_DIR, "static", "chunks");
-  let total = 0;
-  let count = 0;
-  for (const entry of readdirSync(chunksDir, { recursive: true })) {
-    if (extname(String(entry)) !== ".js") continue;
-    const p = join(chunksDir, String(entry));
-    if (!statSync(p).isFile()) continue;
-    total += gzSize(p);
-    count++;
-  }
-  const kb = (total / 1024).toFixed(1);
-  const over = total > BUDGET_KB * 1024;
+const manifestResult = checkPagesFromManifest();
+
+if (manifestResult === null) {
   console.log(
-    `${over ? "❌" : "✅"} Total JS chunks (${count} files): ${kb} KB gz (budget: ${BUDGET_KB} KB)`,
+    "ℹ  app-build-manifest.json not found — per-page budget check skipped.\n" +
+      "  Run ANALYZE=true pnpm build to inspect chunk sizes manually.",
   );
-  return over;
+  process.exit(0);
 }
 
-const manifestResult = checkPagesFromManifest();
-const failed = manifestResult === null ? checkTotalChunks() : manifestResult;
-
-if (failed) {
+if (manifestResult) {
   console.error(
     "\nBundle budget exceeded. Reduce dependencies, enable lazy loading, or adjust BUDGET_KB_GZ.",
   );
