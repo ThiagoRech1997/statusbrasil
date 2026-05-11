@@ -519,5 +519,19 @@
     "ongoing": "em andamento",
     "missing": "—",
     "jsonLdEventName": "Incidente em {serviceName}"
+  },
+  "IncidentOgImage": {
+    "brand": "StatusBrasil",
+    "tagline": "Disponibilidade dos serviços do governo brasileiro",
+    "durationLine": "{duration} sem {serviceName}",
+    "httpLabel": "HTTP {code}",
+    "ongoingLabel": "em andamento",
+    "dateLabel": "Desde {date}",
+    "severity": {
+      "partial": "Parcial",
+      "total": "Total"
+    },
+    "notFoundTitle": "Incidente não encontrado",
+    "notFoundDescription": "Confira o link ou volte para a lista de incidentes."
   }
 }
