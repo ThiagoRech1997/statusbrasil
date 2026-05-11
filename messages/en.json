@@ -519,5 +519,19 @@
     "ongoing": "ongoing",
     "missing": "—",
     "jsonLdEventName": "Incident on {serviceName}"
+  },
+  "IncidentOgImage": {
+    "brand": "StatusBrasil",
+    "tagline": "Brazilian government services availability tracker",
+    "durationLine": "{serviceName} down for {duration}",
+    "httpLabel": "HTTP {code}",
+    "ongoingLabel": "ongoing",
+    "dateLabel": "Since {date}",
+    "severity": {
+      "partial": "Partial",
+      "total": "Total"
+    },
+    "notFoundTitle": "Incident not found",
+    "notFoundDescription": "Check the link or go back to the incidents list."
   }
 }
