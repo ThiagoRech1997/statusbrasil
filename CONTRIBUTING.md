@@ -74,6 +74,24 @@ The `main` branch is protected. Every change must land through a pull request th
 
 Admin enforcement is intentionally left off (`enforce_admins: false`) so the maintainer can break-glass during incident response. Day-to-day work — including maintainer work — still goes through the PR flow above.
 
+## Release process
+
+Releases are driven by annotated Git tags. Only the maintainer creates releases.
+
+```bash
+# 1. Ensure main is green (CI, e2e, Lighthouse).
+# 2. Tag with SemVer and push:
+git tag v0.1.0 -m "MVP launch"
+git push origin v0.1.0
+```
+
+Pushing a `v*.*.*` tag triggers `.github/workflows/deploy.yml`, which:
+1. Builds a multi-arch Docker image (amd64 + arm64) and pushes to `ghcr.io/thiagorech/statusbrasil`.
+2. SSHes into the production VPS and runs `docker compose pull + up`.
+3. Polls `/api/health` until HTTP 200 (60 s timeout).
+
+See `docs/runbook.md` for VPS provisioning, environment variables, and secrets rotation.
+
 ## Reporting bugs and proposing features
 
 Open an issue using the [bug](.github/ISSUE_TEMPLATE/bug.md) or [feature](.github/ISSUE_TEMPLATE/feature.md) template. Security-sensitive issues should be reported privately to <thiagorech.1997@gmail.com> instead of filing a public issue.
