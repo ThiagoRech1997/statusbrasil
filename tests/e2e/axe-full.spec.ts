@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { type Page, expect, test } from "@playwright/test";
 import { getViolations, injectAxe } from "axe-playwright";
 
 type Theme = "light" | "dark";
@@ -16,14 +16,7 @@ const PAGES = [
 const THEMES: Theme[] = ["light", "dark"];
 
 // Inject localStorage before page scripts run so next-themes picks it up immediately.
-async function setTheme(
-  page: Parameters<typeof test>[1] extends infer F
-    ? F extends (f: infer P) => unknown
-      ? P
-      : never
-    : never,
-  theme: Theme,
-) {
+async function setTheme(page: Page, theme: Theme) {
   await page.addInitScript((t: string) => {
     try {
       window.localStorage.setItem("theme", t);
