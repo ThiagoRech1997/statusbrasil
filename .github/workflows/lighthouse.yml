@@ -1,0 +1,98 @@
+name: Lighthouse CI
+
+on:
+  pull_request:
+    types: [labeled, synchronize, reopened]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  lighthouse:
+    name: lighthouse
+    # On PRs, only run when the 'lighthouse' label is present to avoid cost on every PR.
+    if: github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'lighthouse')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CI: "true"
+      NEXT_TELEMETRY_DISABLED: "1"
+      DATABASE_URL: postgres://user:password@localhost:5432/statusbrasil
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: statusbrasil
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U user -d statusbrasil"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Apply database migrations
+        run: pnpm db:migrate
+
+      - name: Seed database
+        run: pnpm seed
+
+      - name: Build app
+        run: pnpm build
+
+      - name: Stage standalone bundle
+        run: |
+          cp -r public .next/standalone/public
+          cp -r .next/static .next/standalone/.next/static
+
+      - name: Start app
+        run: node .next/standalone/server.js &
+        env:
+          PORT: "3000"
+          HOSTNAME: "0.0.0.0"
+
+      - name: Wait for app to be ready
+        run: |
+          set -e
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:3000/api/health > /dev/null; then
+              echo "App ready after ${i}s"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "::error::App did not start within 30s"
+          exit 1
+
+      - name: Check bundle budget
+        run: node scripts/bundle-budget.mjs
+
+      - name: Run Lighthouse CI
+        run: npx @lhci/cli@0.14.x autorun
+
+      - name: Upload Lighthouse report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lhci-report
+          path: lhci-reports/
+          retention-days: 14
