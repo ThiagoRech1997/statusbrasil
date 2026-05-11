@@ -25,6 +25,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "StatusBrasil",
   description: "Disponibilidade dos serviços do governo brasileiro",
+  alternates: {
+    types: {
+      "application/rss+xml": "/feed.xml",
+      "application/atom+xml": "/atom.xml",
+    },
+  },
 };
 
 export function generateStaticParams() {
