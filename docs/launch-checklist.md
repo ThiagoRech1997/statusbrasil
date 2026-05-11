@@ -2,7 +2,7 @@
 
 Section 7 Definition-of-Done. Each item must be checked with evidence before tagging `v0.1.0`.
 
-**Coverage:** 9/14 ✅ — 5 pending M7 sub-tasks
+**Coverage:** 10/14 ✅ — 4 pending M7 sub-tasks
 
 | # | Item | Status | Evidence / Ticket |
 |---|------|--------|-------------------|
@@ -13,7 +13,7 @@ Section 7 Definition-of-Done. Each item must be checked with evidence before tag
 | 5 | Cards OG dinâmicos (home, serviço, incidente) | ✅ 2026-05-11 | Home OG (`06dc105`), Ranking OG ([PR #5](https://github.com/ThiagoRech1997/statusbrasil/pull/5)), Comparativo OG ([PR #12](https://github.com/ThiagoRech1997/statusbrasil/pull/12)), Incident OG ([PR #19](https://github.com/ThiagoRech1997/statusbrasil/pull/19)) |
 | 6 | API pública documentada e rate-limited | ✅ 2026-05-08 | [PR #6](https://github.com/ThiagoRech1997/statusbrasil/pull/6) · `/api/v1/*` + Scalar UI em `/api/docs` + `@upstash/ratelimit` |
 | 7 | Imagem Docker buildando em CI multi-arch | ❌ Pendente | M7.8 — `deploy.yml` com build multiarch + push GHCR |
-| 8 | Lighthouse ≥90 perf+a11y+best-practices+seo na home mobile | ❌ Pendente | M7.1 — `lighthouserc.js` + workflow `lighthouse.yml` |
+| 8 | Lighthouse ≥90 perf+a11y+best-practices+seo na home mobile | ✅ 2026-05-11 | [PR #25](https://github.com/ThiagoRech1997/statusbrasil/pull/25) · TFR-107 — `lighthouserc.js` + `lighthouse.yml`, 6 páginas, mobile slow-3G |
 | 9 | Smoke E2E passando em CI | ✅ 2026-05-09 | [PR #3](https://github.com/ThiagoRech1997/statusbrasil/pull/3) · TFR-212 — job `e2e` em `ci.yml` + Playwright full suite ([PR #22](https://github.com/ThiagoRech1997/statusbrasil/pull/22)) |
 | 10 | /metodologia publicada com disclaimer + link repo | ✅ 2026-05-11 | [PR #14](https://github.com/ThiagoRech1997/statusbrasil/pull/14) · TFR-100 — `/[locale]/metodologia` + disclaimer LGPD |
 | 11 | Repo público GitHub com README + AGPL + CI verde | ✅ 2026-05-08 | [github.com/ThiagoRech1997/statusbrasil](https://github.com/ThiagoRech1997/statusbrasil) · `LICENSE` (AGPL-3.0) · CI badge em `README.md` |
@@ -28,12 +28,11 @@ Section 7 Definition-of-Done. Each item must be checked with evidence before tag
 | Pendência | Ticket | Assignee |
 |-----------|--------|----------|
 | Deploy multi-arch + domínio + HTTPS | TFR-114 (M7.8) | BackendDev |
-| Lighthouse CI ≥90 | TFR-107 (M7.1) | FrontendDev |
 | Plausible | TFR-110 (M7.4) | BackendDev |
 | Sentry live test | TFR-113 (M7.7) | BackendDev |
 | Verificar dados reais em prod | TFR-118 (M7.12) | BackendDev |
 
 ---
 
-_Atualizado por: FoundingEngineer — 2026-05-11_
+_Atualizado por: FrontendDev — 2026-05-11_
 _Fechar M7.11 quando coverage = 14/14._
