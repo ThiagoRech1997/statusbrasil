@@ -496,5 +496,28 @@
       "privacyLabel": "Política de privacidade",
       "privacyDesc": "Dados coletados, retenção e seus direitos sob a LGPD."
     }
+  },
+  "IncidentDetail": {
+    "metaTitle": "Incidente em {serviceName} — StatusBrasil",
+    "metaDescription": "Incidente de {severity} em {serviceName} iniciado em {startedAt}. StatusBrasil registra indisponibilidades dos serviços do governo brasileiro.",
+    "heading": "Detalhe do incidente",
+    "backToList": "← Todos os incidentes",
+    "labels": {
+      "service": "Serviço",
+      "category": "Categoria",
+      "severity": "Severidade",
+      "startedAt": "Início",
+      "endedAt": "Término",
+      "duration": "Duração",
+      "statusCode": "Código HTTP",
+      "errorMessage": "Mensagem de erro"
+    },
+    "severity": {
+      "partial": "Parcial",
+      "total": "Total"
+    },
+    "ongoing": "em andamento",
+    "missing": "—",
+    "jsonLdEventName": "Incidente em {serviceName}"
   }
 }

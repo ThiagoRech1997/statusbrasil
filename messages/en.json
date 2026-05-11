@@ -496,5 +496,28 @@
       "privacyLabel": "Privacy policy",
       "privacyDesc": "Data collected, retention, and your rights under Brazil's LGPD."
     }
+  },
+  "IncidentDetail": {
+    "metaTitle": "Incident on {serviceName} — StatusBrasil",
+    "metaDescription": "{severity} incident on {serviceName} started at {startedAt}. StatusBrasil tracks outages in Brazilian government services.",
+    "heading": "Incident detail",
+    "backToList": "← All incidents",
+    "labels": {
+      "service": "Service",
+      "category": "Category",
+      "severity": "Severity",
+      "startedAt": "Started",
+      "endedAt": "Ended",
+      "duration": "Duration",
+      "statusCode": "HTTP code",
+      "errorMessage": "Error message"
+    },
+    "severity": {
+      "partial": "Partial",
+      "total": "Total"
+    },
+    "ongoing": "ongoing",
+    "missing": "—",
+    "jsonLdEventName": "Incident on {serviceName}"
   }
 }
