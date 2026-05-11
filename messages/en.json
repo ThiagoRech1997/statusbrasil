@@ -378,5 +378,35 @@
     "uptimeUnknown": "—",
     "viewService": "View details of {name}",
     "viewServiceText": "View"
+  },
+  "Privacy": {
+    "metaTitle": "Privacy — StatusBrasil",
+    "metaDescription": "How StatusBrasil handles visitor data and monitored endpoints.",
+    "heading": "Privacy",
+    "intro": "StatusBrasil is a public availability dashboard. This page explains how we handle visitor data and the endpoints we monitor.",
+    "noCookies": {
+      "heading": "No tracking cookies",
+      "body": "We don't use tracking cookies. No browsing data is shared with advertising networks."
+    },
+    "noPersonalData": {
+      "heading": "No visitor personal data",
+      "body": "We don't store visitor personal data. Server logs are discarded automatically and never linked to identities."
+    },
+    "analytics": {
+      "heading": "Analytics: Plausible",
+      "body": "We use Plausible Analytics — no cookies, aggregated data, LGPD/GDPR-compliant. No personal information is collected or shared with third parties."
+    },
+    "noGA": {
+      "heading": "No Google Analytics",
+      "body": "We don't use Google Analytics or any other third-party analytics service that tracks individual visitors."
+    },
+    "userAgent": {
+      "heading": "Our monitoring User-Agent",
+      "body": "When monitoring endpoints, we identify ourselves with the following User-Agent:"
+    },
+    "publicEndpoints": {
+      "heading": "Monitored endpoints are public",
+      "body": "We only monitor public, unauthenticated endpoints. No credentials are stored or used in checks."
+    }
   }
 }

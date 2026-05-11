@@ -378,5 +378,35 @@
     "uptimeUnknown": "—",
     "viewService": "Ver detalhes de {name}",
     "viewServiceText": "Ver"
+  },
+  "Privacy": {
+    "metaTitle": "Privacidade — StatusBrasil",
+    "metaDescription": "Como o StatusBrasil trata dados de visitantes e endpoints monitorados.",
+    "heading": "Privacidade",
+    "intro": "StatusBrasil é um painel público de disponibilidade. Esta página explica como tratamos dados de visitantes e os endpoints que monitoramos.",
+    "noCookies": {
+      "heading": "Sem cookies de rastreamento",
+      "body": "Não usamos cookies de tracking. Nenhum dado de navegação é compartilhado com redes de publicidade."
+    },
+    "noPersonalData": {
+      "heading": "Sem dados pessoais de visitantes",
+      "body": "Não armazenamos dados pessoais de visitantes. Logs de servidor são descartados automaticamente e nunca vinculados a identidades."
+    },
+    "analytics": {
+      "heading": "Analytics: Plausible",
+      "body": "Usamos Plausible Analytics — sem cookies, dados agregados, em conformidade com a LGPD. Nenhuma informação pessoal é coletada ou compartilhada com terceiros."
+    },
+    "noGA": {
+      "heading": "Sem Google Analytics",
+      "body": "Não usamos Google Analytics nem qualquer outro serviço de analytics de terceiros que rastreie visitantes individualmente."
+    },
+    "userAgent": {
+      "heading": "User-Agent dos nossos checks",
+      "body": "Ao monitorar endpoints, nos identificamos com o seguinte User-Agent:"
+    },
+    "publicEndpoints": {
+      "heading": "Endpoints monitorados são públicos",
+      "body": "Monitoramos apenas endpoints públicos e não-autenticados. Nenhuma credencial é armazenada ou utilizada nos checks."
+    }
   }
 }
