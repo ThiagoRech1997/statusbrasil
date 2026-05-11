@@ -2,7 +2,7 @@
 
 import { ArrowDown, ArrowUp, ArrowUpDown, ChevronRight } from "lucide-react";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Table,
   TableBody,
@@ -25,6 +25,8 @@ export interface IncidentsTableProps {
   defaultSort?: { column: SortableColumn; direction: SortDirection };
   /** Reference time for computing duration of open incidents. Pin in tests for stable output. */
   now?: Date;
+  /** When provided, adds a Service column linking to /servico/{slug}. */
+  serviceNames?: Record<string, string>;
   className?: string;
 }
 
@@ -87,6 +89,7 @@ export function IncidentsTable({
   pageSize = 10,
   defaultSort,
   now,
+  serviceNames,
   className,
 }: IncidentsTableProps) {
   const t = useTranslations("IncidentsTable");
@@ -98,6 +101,27 @@ export function IncidentsTable({
   );
   const [page, setPage] = useState(0);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
+
+  // Refs capture initial prop values so the mount-only effect can read them without deps.
+  const incidentsRef = useRef(incidents);
+  const pageSizeRef = useRef(pageSize);
+
+  // Deep-link: if URL hash is #incident-{id}, navigate to that page on mount.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const hash = window.location.hash;
+    if (!hash.startsWith("#incident-")) return;
+    const targetId = hash.slice("#incident-".length);
+    const idx = incidentsRef.current.findIndex((row) => row.id === targetId);
+    if (idx === -1) return;
+    setPage(Math.floor(idx / pageSizeRef.current));
+    setTimeout(() => {
+      document.getElementById(`incident-${targetId}`)?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }, 50);
+  }, []);
 
   const referenceNow = now?.getTime() ?? Date.now();
 
@@ -183,6 +207,7 @@ export function IncidentsTable({
       <Table className="hidden sm:table" aria-label={t("ariaLabel")}>
         <TableHeader>
           <TableRow>
+            {serviceNames != null && <TableHead scope="col">{t("columns.service")}</TableHead>}
             {SORTABLE_COLUMNS.map((col) => (
               <TableHead
                 key={col}
@@ -212,7 +237,22 @@ export function IncidentsTable({
           {pageRows.map((row) => {
             const { display, truncated } = truncateMessage(row.errorMessage, expanded.has(row.id));
             return (
-              <TableRow key={row.id} data-incident-id={row.id} data-severity={row.severity}>
+              <TableRow
+                key={row.id}
+                id={`incident-${row.id}`}
+                data-incident-id={row.id}
+                data-severity={row.severity}
+              >
+                {serviceNames != null && (
+                  <TableCell>
+                    <Link
+                      href={`/servico/${row.serviceSlug}`}
+                      className="font-medium hover:underline focus-visible:underline focus-visible:outline-none"
+                    >
+                      {serviceNames[row.serviceSlug] ?? row.serviceSlug}
+                    </Link>
+                  </TableCell>
+                )}
                 <TableCell className="tabular-nums">{formatStarted(row.startedAt)}</TableCell>
                 <TableCell className="tabular-nums">{formatDuration(row)}</TableCell>
                 <TableCell className="tabular-nums">{row.statusCode ?? t("missing")}</TableCell>
@@ -266,10 +306,19 @@ export function IncidentsTable({
           return (
             <li
               key={row.id}
+              id={`incident-${row.id}`}
               data-incident-id={row.id}
               data-severity={row.severity}
               className="flex flex-col gap-2 rounded-xl border border-border bg-card p-4 text-sm shadow-sm"
             >
+              {serviceNames != null && (
+                <Link
+                  href={`/servico/${row.serviceSlug}`}
+                  className="text-xs font-semibold text-foreground hover:underline focus-visible:underline focus-visible:outline-none"
+                >
+                  {serviceNames[row.serviceSlug] ?? row.serviceSlug}
+                </Link>
+              )}
               <div className="flex items-start justify-between gap-2">
                 <span className="font-medium tabular-nums">
                   <span className="sr-only">{`${t("columns.startedAt")}: `}</span>

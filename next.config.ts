@@ -19,6 +19,9 @@ const SECURITY_HEADERS = [
 const nextConfig: NextConfig = {
   output: "standalone",
   serverExternalPackages: ["postgres"],
+  turbopack: {
+    root: import.meta.dirname,
+  },
   async headers() {
     return [{ source: "/:path*", headers: SECURITY_HEADERS }];
   },
