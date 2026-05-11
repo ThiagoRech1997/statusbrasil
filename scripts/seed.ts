@@ -2,11 +2,12 @@ import { config as loadEnv } from "dotenv";
 import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { services } from "@/lib/db/schema";
+import { incidents, services } from "@/lib/db/schema";
 
 loadEnv({ path: [".env.local", ".env"] });
 
 type ServiceSeed = typeof services.$inferInsert;
+type IncidentSeed = typeof incidents.$inferInsert;
 
 const SERVICES: ServiceSeed[] = [
   {
@@ -164,6 +165,37 @@ const SERVICES: ServiceSeed[] = [
   },
 ];
 
+const now = new Date();
+const INCIDENTS: IncidentSeed[] = [
+  {
+    serviceSlug: "gov-br",
+    startedAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000),
+    endedAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000 + 45 * 60 * 1000),
+    durationSeconds: 2700,
+    statusCode: 503,
+    errorMessage: "Service Unavailable",
+    severity: "partial",
+  },
+  {
+    serviceSlug: "meu-inss",
+    startedAt: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000),
+    endedAt: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000 + 90 * 60 * 1000),
+    durationSeconds: 5400,
+    statusCode: 500,
+    errorMessage: "Internal Server Error",
+    severity: "total",
+  },
+  {
+    serviceSlug: "receita-federal",
+    startedAt: new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000),
+    endedAt: new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000 + 30 * 60 * 1000),
+    durationSeconds: 1800,
+    statusCode: 504,
+    errorMessage: "Gateway Timeout",
+    severity: "partial",
+  },
+];
+
 async function main() {
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error("DATABASE_URL is not set");
@@ -188,6 +220,9 @@ async function main() {
         },
       });
     console.log(`Seeded ${SERVICES.length} services.`);
+
+    await db.insert(incidents).values(INCIDENTS).onConflictDoNothing();
+    console.log(`Seeded ${INCIDENTS.length} incidents.`);
   } finally {
     await client.end();
   }

@@ -2,7 +2,7 @@
 
 Section 7 Definition-of-Done. Each item must be checked with evidence before tagging `v0.1.0`.
 
-**Coverage:** 10/14 ✅ — 4 pending M7 sub-tasks
+**Coverage:** 11/14 ✅ — 3 pending M7 sub-tasks
 
 | # | Item | Status | Evidence / Ticket |
 |---|------|--------|-------------------|
@@ -18,7 +18,7 @@ Section 7 Definition-of-Done. Each item must be checked with evidence before tag
 | 10 | /metodologia publicada com disclaimer + link repo | ✅ 2026-05-11 | [PR #14](https://github.com/ThiagoRech1997/statusbrasil/pull/14) · TFR-100 — `/[locale]/metodologia` + disclaimer LGPD |
 | 11 | Repo público GitHub com README + AGPL + CI verde | ✅ 2026-05-08 | [github.com/ThiagoRech1997/statusbrasil](https://github.com/ThiagoRech1997/statusbrasil) · `LICENSE` (AGPL-3.0) · CI badge em `README.md` |
 | 12 | Domínio prod com Cloudflare e HTTPS | ❌ Pendente | M7.8 — SSH deploy + Cloudflare DNS |
-| 13 | Plausible instalado e funcionando | ❌ Pendente | M7.4 — `next/script` strategy=afterInteractive, só em prod |
+| 13 | Plausible instalado e funcionando | ✅ 2026-05-11 | [PR #24](https://github.com/ThiagoRech1997/statusbrasil/pull/24) · TFR-110 — `next/script` strategy=afterInteractive, NEXT_PUBLIC_PLAUSIBLE_DOMAIN, prod-only |
 | 14 | Sentry capturando erros em produção | ❌ Pendente | M7.7 — live test em staging confirma capture+alert |
 
 ---
@@ -28,11 +28,10 @@ Section 7 Definition-of-Done. Each item must be checked with evidence before tag
 | Pendência | Ticket | Assignee |
 |-----------|--------|----------|
 | Deploy multi-arch + domínio + HTTPS | TFR-114 (M7.8) | BackendDev |
-| Plausible | TFR-110 (M7.4) | BackendDev |
 | Sentry live test | TFR-113 (M7.7) | BackendDev |
 | Verificar dados reais em prod | TFR-118 (M7.12) | BackendDev |
 
 ---
 
-_Atualizado por: FrontendDev — 2026-05-11_
+_Atualizado por: FoundingEngineer — 2026-05-11_
 _Fechar M7.11 quando coverage = 14/14._
