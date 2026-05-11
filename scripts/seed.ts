@@ -165,34 +165,81 @@ const SERVICES: ServiceSeed[] = [
   },
 ];
 
-const now = new Date();
+const DAY_MS = 24 * 60 * 60 * 1000;
+const HOUR_MS = 60 * 60 * 1000;
+const MINUTE_MS = 60 * 1000;
+
+function ago(days: number, hourOfDay = 12): Date {
+  const d = new Date();
+  d.setUTCHours(hourOfDay, 0, 0, 0);
+  return new Date(d.getTime() - days * DAY_MS);
+}
+
+function durationSeconds(ms: number): number {
+  return Math.round(ms / 1000);
+}
+
+// Deterministic UUIDs keep the seed idempotent (re-running won't duplicate).
 const INCIDENTS: IncidentSeed[] = [
   {
-    serviceSlug: "gov-br",
-    startedAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000),
-    endedAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000 + 45 * 60 * 1000),
-    durationSeconds: 2700,
-    statusCode: 503,
-    errorMessage: "Service Unavailable",
-    severity: "partial",
-  },
-  {
+    id: "11111111-1111-1111-1111-000000000001",
     serviceSlug: "meu-inss",
-    startedAt: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000),
-    endedAt: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000 + 90 * 60 * 1000),
-    durationSeconds: 5400,
-    statusCode: 500,
-    errorMessage: "Internal Server Error",
+    startedAt: ago(2, 9),
+    endedAt: new Date(ago(2, 9).getTime() + 2.5 * HOUR_MS),
+    durationSeconds: durationSeconds(2.5 * HOUR_MS),
+    statusCode: 503,
+    errorMessage: "503 Service Unavailable — backend overloaded",
     severity: "total",
   },
   {
-    serviceSlug: "receita-federal",
-    startedAt: new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000),
-    endedAt: new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000 + 30 * 60 * 1000),
-    durationSeconds: 1800,
-    statusCode: 504,
-    errorMessage: "Gateway Timeout",
+    id: "11111111-1111-1111-1111-000000000002",
+    serviceSlug: "gov-br",
+    startedAt: ago(10, 14),
+    endedAt: new Date(ago(10, 14).getTime() + 45 * MINUTE_MS),
+    durationSeconds: durationSeconds(45 * MINUTE_MS),
+    statusCode: 502,
+    errorMessage: "502 Bad Gateway",
     severity: "partial",
+  },
+  {
+    id: "11111111-1111-1111-1111-000000000003",
+    serviceSlug: "e-cac",
+    startedAt: ago(26, 10),
+    endedAt: new Date(ago(26, 10).getTime() + HOUR_MS),
+    durationSeconds: durationSeconds(HOUR_MS),
+    statusCode: 504,
+    errorMessage: "504 Gateway Timeout",
+    severity: "partial",
+  },
+  {
+    id: "11111111-1111-1111-1111-000000000004",
+    serviceSlug: "conectesus",
+    startedAt: ago(52, 8),
+    endedAt: new Date(ago(52, 8).getTime() + 5 * HOUR_MS),
+    durationSeconds: durationSeconds(5 * HOUR_MS),
+    statusCode: null,
+    errorMessage: "Connection timeout after 10s",
+    severity: "total",
+  },
+  {
+    id: "11111111-1111-1111-1111-000000000005",
+    serviceSlug: "fgts-caixa",
+    startedAt: ago(16, 11),
+    endedAt: null,
+    durationSeconds: null,
+    statusCode: 503,
+    errorMessage: "503 Service Unavailable — intermittent",
+    severity: "partial",
+  },
+  {
+    id: "11111111-1111-1111-1111-000000000006",
+    serviceSlug: "agendamento-pf",
+    startedAt: ago(72, 15),
+    endedAt: new Date(ago(72, 15).getTime() + 30 * MINUTE_MS),
+    durationSeconds: durationSeconds(30 * MINUTE_MS),
+    statusCode: 503,
+    errorMessage: "503 Service Unavailable",
+    severity: "total",
   },
 ];
 
@@ -221,7 +268,7 @@ async function main() {
       });
     console.log(`Seeded ${SERVICES.length} services.`);
 
-    await db.insert(incidents).values(INCIDENTS).onConflictDoNothing();
+    await db.insert(incidents).values(INCIDENTS).onConflictDoNothing({ target: incidents.id });
     console.log(`Seeded ${INCIDENTS.length} incidents.`);
   } finally {
     await client.end();
