@@ -1,8 +1,10 @@
+import bundleAnalyzer from "@next/bundle-analyzer";
 import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin();
+const withBundleAnalyzer = bundleAnalyzer({ enabled: process.env.ANALYZE === "true" });
 
 const SECURITY_HEADERS = [
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains" },
@@ -27,7 +29,9 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withSentryConfig(withNextIntl(nextConfig), {
-  silent: true,
-  sourcemaps: { disable: true },
-});
+export default withBundleAnalyzer(
+  withSentryConfig(withNextIntl(nextConfig), {
+    silent: true,
+    sourcemaps: { disable: true },
+  }),
+);
