@@ -4,7 +4,7 @@ Public availability dashboard for Brazilian government services. Next.js 16 App 
 
 ## This is NOT the Next.js you know
 
-This repo runs **Next.js 16.2.4** with **React 19.2**. APIs, file conventions, and naming have breaking changes from older majors that may dominate your training data. Before writing Next-specific code, consult `node_modules/next/dist/docs/` (especially `01-app/`) and heed deprecation notices.
+This repo runs **Next.js 16.4.6** with **React 19.2**. APIs, file conventions, and naming have breaking changes from older majors that may dominate your training data. Before writing Next-specific code, consult `node_modules/next/dist/docs/` (especially `01-app/`) and heed deprecation notices.
 
 Three traps that bite every time:
 
